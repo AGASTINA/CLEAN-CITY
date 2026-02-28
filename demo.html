@@ -320,7 +320,7 @@
             <p style="font-size: 12px; opacity: 0.5; margin-top: 5px;">Supported: JPG, PNG</p>
           </div>
           <img id="previewImage" class="preview-image" style="display: none;" />
-          <input type="file" id="imageInput" accept="image/*" style="display: none;" />
+          <input type="file" id="fileInput" accept="image/*" style="display: none;" />
         </div>
 
         <button id="classifyBtn" style="width: 100%; margin-top: 15px;" disabled>
@@ -367,5 +367,122 @@
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="demo-app.js"></script>
+  
+  <script>
+    // File upload handler
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadPrompt = document.getElementById('uploadPrompt');
+    const previewImage = document.getElementById('previewImage');
+    const classifyBtn = document.getElementById('classifyBtn');
+    const classificationResult = document.getElementById('classificationResult');
+
+    // Click to upload
+    uploadZone.addEventListener('click', () => {
+      fileInput.click();
+    });
+
+    // File input change
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+      }
+    });
+
+    // Drag over
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = '#36f0ff';
+      uploadZone.style.background = 'rgba(54, 240, 255, 0.1)';
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
+      uploadZone.style.background = '';
+    });
+
+    // Drop
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
+      uploadZone.style.background = '';
+      
+      if (e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+      }
+    });
+
+    function handleFile(file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file');
+        return;
+      }
+
+      // Read and display file
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        previewImage.src = e.target.result;
+        previewImage.style.display = 'block';
+        uploadPrompt.style.display = 'none';
+        classifyBtn.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // Classify button
+    classifyBtn.addEventListener('click', () => {
+      classifyBtn.disabled = true;
+      classifyBtn.textContent = 'Analyzing...';
+
+      // Simulate API call
+      setTimeout(() => {
+        const results = {
+          type: 'Mixed Plastic & Organic',
+          confidence: '94.2%',
+          severity: 'HIGH',
+          volume: '~450 kg',
+          risk: 'Moderate',
+          recommendation: '1. Route waste truck immediately\n2. Alert enforcement if illegal dumping detected\n3. Segregate plastic for recycling\n4. Organic waste to composting facility'
+        };
+
+        const html = `
+          <div class="result">
+            <h3>✅ Classification Complete</h3>
+            <div class="result-grid">
+              <div class="result-item">
+                <span class="result-label">Waste Type</span>
+                <span class="result-value">${results.type}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Confidence</span>
+                <span class="result-value">${results.confidence}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Severity</span>
+                <span class="result-value" style="color: #f59e0b;">${results.severity}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Volume</span>
+                <span class="result-value">${results.volume}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Risk Level</span>
+                <span class="result-value">${results.risk}</span>
+              </div>
+              <div class="result-item">
+                <span class="result-label">Recommendation</span>
+                <span class="result-value" style="white-space: pre-line; text-align: left;">${results.recommendation}</span>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        classificationResult.innerHTML = html;
+        classificationResult.style.display = 'block';
+        classifyBtn.textContent = 'Analyze with Gemini AI';
+      }, 1500);
+    });
+  </script>
 </body>
 </html>

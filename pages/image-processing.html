@@ -32,6 +32,14 @@
             justify-content: center;
         }
 
+        #uploadPlaceholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+
         .upload-area:hover,
         .upload-area.dragover {
             border-color: var(--cyan);
@@ -483,10 +491,11 @@
 
         async function runAnalysis() {
             if (!currentImageFile) {
-                alert('No image selected');
+                alert('No image selected. Please upload an image first.');
                 return;
             }
 
+            console.log('Starting analysis with file:', currentImageFile.name);
             analyzeBtn.disabled = true;
             scanningOverlay.style.display = 'flex';
 
@@ -499,17 +508,24 @@
                 formData.append('wardNumber', '1');
                 formData.append('reporterType', 'officer');
 
+                console.log('Sending request to API...');
+                
                 // Send to backend for Gemini AI analysis
                 const response = await fetch(`${API_BASE}/reports`, {
                     method: 'POST',
                     body: formData
                 });
 
+                console.log('Response status:', response.status);
+
                 if (!response.ok) {
-                    throw new Error('Analysis failed');
+                    const errorText = await response.text();
+                    console.error('API Error:', errorText);
+                    throw new Error(`Analysis failed: ${response.status} ${response.statusText}`);
                 }
 
                 const result = await response.json();
+                console.log('Analysis result:', result);
                 
                 scanningOverlay.style.display = 'none';
                 analyzeBtn.style.display = 'none';
@@ -522,8 +538,11 @@
                 analyzeBtn.disabled = false;
                 
                 // Show mock results as fallback
-                alert('Using offline analysis mode (API unavailable)');
-                showMockResults();
+                const useMock = confirm('Backend API unavailable. Use offline demo mode with mock results?');
+                if (useMock) {
+                    analyzeBtn.style.display = 'none';
+                    showMockResults();
+                }
             }
         }
 

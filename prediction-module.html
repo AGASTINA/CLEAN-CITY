@@ -333,39 +333,7 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-header">
-        <h2>Algorithm Details</h2>
-      </div>
-      <div class="card glass">
-        <div style="padding: 20px 0;">
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Formula</div>
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
-              overflowProbability = (projectedLoad / binCapacity) × (1 + avgSeverity) × 100
-            </div>
-          </div>
 
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Inputs</div>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; color: var(--muted);"><strong>projectedLoad:</strong> Expected waste volume in next period</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>binCapacity:</strong> Maximum bin capacity in kg</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>avgSeverity:</strong> Average severity score (0-1) from 7-day history</li>
-            </ul>
-          </div>
-
-          <div>
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Output</div>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; color: var(--muted);"><strong>Probability %:</strong> 0-100% chance of overflow</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>hoursToOverflow:</strong> Time until breach expected</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>urgencyLevel:</strong> LOW / MEDIUM / HIGH / CRITICAL</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <script src="intelligence.js"></script>

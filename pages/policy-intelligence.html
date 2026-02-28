@@ -244,13 +244,19 @@
 
             <div
                 style="display: flex; gap: 16px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
-                <button class="btn btn-primary" style="flex: 1;">Download Official Proposal (PDF)</button>
+                    <button class="btn btn-primary" style="flex: 1;" onclick="downloadReport()">⬇️ Download Governance Report</button>
                 <button class="btn btn-secondary">Forward to Commissioner</button>
             </div>
         </div>
     </div>
 
     <script src="/pages/shared/navigation.js"></script>
+    <script>
+        function downloadReport() {
+            // Download from API
+            window.location.href = 'http://localhost:5000/api/intelligence/report/download';
+        }
+    </script>
 </body>
 
 </html>

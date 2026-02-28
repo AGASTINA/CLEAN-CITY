@@ -212,15 +212,14 @@
 
     <div class="glass-panel mb-4 animate-fade-in">
         <div class="panel-title">
-            <span style="font-size: 1.5rem; margin-right: 8px;">♊</span> Gemini Vision Inference Engine
+            <span style="font-size: 1.5rem; margin-right: 8px;">🤖</span> AI Waste Classification System
         </div>
-        <p class="text-muted" style="margin-top: 0;">Upload or capture an image of unsegregated waste to classify type,
-            analyze sentiment, and predict circular economy pathways.</p>
+        <p class="text-muted" style="margin-top: 0;">Upload waste images or use live camera feed to automatically classify waste type, assess threat level, and receive segregation recommendations powered by Gemini AI.</p>
 
         <div class="detection-grid mt-4">
             <!-- Left: Upload Area -->
             <div class="upload-container">
-                <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-area" id="dropZone">
                     <img id="imagePreview" src="" alt="Preview">
 
                     <div class="scanning-overlay" id="scanningOverlay">
@@ -234,10 +233,18 @@
                     <div id="uploadPlaceholder">
                         <div class="upload-icon">📸</div>
                         <div class="upload-text">Drag & drop image here or click to browse</div>
-                        <div class="upload-options" onclick="event.stopPropagation()">
-                            <button class="btn btn-primary"
-                                onclick="document.getElementById('fileInput').click()">Browse Files</button>
-                            <button class="btn btn-secondary">Open Camera</button>
+                        <div class="upload-options">
+                            <button class="btn btn-primary" onclick="event.stopPropagation(); document.getElementById('fileInput').click();">Browse Files</button>
+                            <button class="btn btn-secondary" onclick="event.stopPropagation(); openCamera(event);">Open Camera</button>
+                        </div>
+                    </div>
+
+                    <!-- Camera View -->
+                    <div id="cameraView" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 6; background: #000; flex-direction: column; align-items: center; justify-content: center;">
+                        <video id="cameraFeed" autoplay playsinline style="width: 100%; height: 100%; object-fit: contain;"></video>
+                        <div style="position: absolute; bottom: 20px; display: flex; gap: 12px; z-index: 7;">
+                            <button class="btn btn-success" onclick="captureImage()">📷 Capture</button>
+                            <button class="btn btn-secondary" onclick="closeCamera()">❌ Cancel</button>
                         </div>
                     </div>
 
@@ -245,7 +252,7 @@
                         style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none;"
                         onclick="resetCapture(event)">Reset</button>
                 </div>
-                <input type="file" id="fileInput" accept="image/*">
+                <input type="file" id="fileInput" accept="image/*,image/jpg,image/jpeg,image/png,image/webp">
 
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
                     <div style="font-size: 0.8rem; color: var(--muted);">Supported formats: JPG, PNG, WebP</div>
@@ -274,7 +281,7 @@
                 </div>
 
                 <div class="result-item" style="margin-top: 8px;">
-                    <div class="result-label">Severity Level</div>
+                    <div class="result-label">Threat Level</div>
                     <div class="result-value" id="resSeverity">--</div>
                 </div>
 
@@ -284,13 +291,13 @@
                 </div>
 
                 <div class="result-item">
-                    <div class="result-label">Illegal Dumping Risk</div>
+                    <div class="result-label">Risk Assessment</div>
                     <div class="result-value" id="resRisk">--</div>
                 </div>
 
                 <div class="result-item highlight" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                    <div class="result-label">AI Action Recommendation</div>
-                    <div style="font-size: 0.9rem;" id="resAction">Upload an image to get governance recommendations.
+                    <div class="result-label">Segregation & Action Plan</div>
+                    <div style="font-size: 0.9rem;" id="resAction">Upload an image to get waste management recommendations.
                     </div>
                 </div>
 
@@ -339,6 +346,7 @@
 
     <script src="/pages/shared/navigation.js"></script>
     <script>
+        const API_BASE = 'http://localhost:5000/api';
         const fileInput = document.getElementById('fileInput');
         const dropZone = document.getElementById('dropZone');
         const imagePreview = document.getElementById('imagePreview');
@@ -347,6 +355,20 @@
         const resetBtn = document.getElementById('resetBtn');
         const scanningOverlay = document.getElementById('scanningOverlay');
         const resultsPanel = document.getElementById('resultsPanel');
+        const cameraView = document.getElementById('cameraView');
+        const cameraFeed = document.getElementById('cameraFeed');
+        let stream = null;
+        let currentImageFile = null;
+
+        // Click handler for dropZone (but not when clicking buttons)
+        dropZone.addEventListener('click', (e) => {
+            // Only trigger file input if not clicking on a button or camera view
+            if (e.target === dropZone || e.target.closest('#uploadPlaceholder')) {
+                if (!e.target.classList.contains('btn') && !e.target.closest('.btn')) {
+                    fileInput.click();
+                }
+            }
+        });
 
         // Drag and drop handlers
         dropZone.addEventListener('dragover', (e) => {
@@ -367,14 +389,20 @@
         });
 
         fileInput.addEventListener('change', (e) => {
+            console.log('File input changed', e.target.files);
             if (e.target.files.length) {
                 handleFile(e.target.files[0]);
             }
         });
 
         function handleFile(file) {
-            if (!file.type.startsWith('image/')) return;
+            console.log('Handling file:', file.name, file.type, file.size);
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file (JPG, PNG, WebP)');
+                return;
+            }
 
+            currentImageFile = file;
             const reader = new FileReader();
             reader.onload = (e) => {
                 imagePreview.src = e.target.result;
@@ -390,9 +418,50 @@
             reader.readAsDataURL(file);
         }
 
+        // Camera functions
+        async function openCamera(event) {
+            event.stopPropagation();
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' }, 
+                    audio: false 
+                });
+                cameraFeed.srcObject = stream;
+                cameraView.style.display = 'flex';
+            } catch (error) {
+                alert('Unable to access camera: ' + error.message);
+            }
+        }
+
+        function closeCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            cameraView.style.display = 'none';
+        }
+
+        function captureImage() {
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraFeed.videoWidth;
+            canvas.height = cameraFeed.videoHeight;
+            canvas.getContext('2d').drawImage(cameraFeed, 0, 0);
+            
+            canvas.toBlob((blob) => {
+                const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' });
+                closeCamera();
+                handleFile(file);
+            }, 'image/jpeg', 0.9);
+        }
+
         function resetCapture(event) {
             if (event) event.stopPropagation();
+            
+            // Close camera if open
+            closeCamera();
+            
             fileInput.value = '';
+            currentImageFile = null;
             imagePreview.src = '';
             imagePreview.style.display = 'none';
             uploadPlaceholder.style.display = 'flex';
@@ -412,17 +481,134 @@
             document.getElementById('btnAlert').disabled = true;
         }
 
-        function runAnalysis() {
+        async function runAnalysis() {
+            if (!currentImageFile) {
+                alert('No image selected');
+                return;
+            }
+
             analyzeBtn.disabled = true;
             scanningOverlay.style.display = 'flex';
 
-            // Mock API delay
-            setTimeout(() => {
+            try {
+                // Create form data with image
+                const formData = new FormData();
+                formData.append('images', currentImageFile);
+                formData.append('latitude', '9.9252');
+                formData.append('longitude', '78.1198');
+                formData.append('wardNumber', '1');
+                formData.append('reporterType', 'officer');
+
+                // Send to backend for Gemini AI analysis
+                const response = await fetch(`${API_BASE}/reports`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Analysis failed');
+                }
+
+                const result = await response.json();
+                
+                scanningOverlay.style.display = 'none';
+                analyzeBtn.style.display = 'none';
+                
+                showResults(result.data);
+
+            } catch (error) {
+                console.error('Analysis error:', error);
                 scanningOverlay.style.display = 'none';
                 analyzeBtn.disabled = false;
-                analyzeBtn.style.display = 'none'; // Hide after running
+                
+                // Show mock results as fallback
+                alert('Using offline analysis mode (API unavailable)');
                 showMockResults();
-            }, 2500);
+            }
+        }
+
+        function showResults(data) {
+            resultsPanel.classList.add('active');
+
+            const wasteType = data.wasteType || data.classification?.wasteType || 'Unknown';
+            const confidence = data.aiConfidence || data.classification?.aiConfidence || 0;
+            const severityScore = data.severityScore || data.classification?.severityScore || 3;
+            const volume = data.estimatedVolume || data.classification?.estimatedVolume || 'medium';
+            const riskLevel = data.riskLevel || data.classification?.riskLevel || 'moderate';
+            const isIllegalDumping = data.isIllegalDumping || data.classification?.isIllegalDumping || false;
+            const recommendations = data.recommendations || data.classification?.recommendations || [];
+            const explanation = data.explanation || data.aiExplanation || '';
+
+            // Update UI
+            document.getElementById('resType').textContent = wasteType.charAt(0).toUpperCase() + wasteType.slice(1);
+            document.getElementById('resConf').textContent = `${(confidence * 100).toFixed(1)}%`;
+            document.getElementById('confBar').style.width = `${confidence * 100}%`;
+
+            // Severity with color
+            const severityText = severityScore >= 4 ? 'CRITICAL' : severityScore >= 3 ? 'HIGH' : 'MODERATE';
+            const severityColor = severityScore >= 4 ? 'danger' : severityScore >= 3 ? 'warning' : 'success';
+            document.getElementById('resSeverity').innerHTML = `<span class="text-${severityColor}" style="font-weight:700;">${severityText}</span>`;
+
+            // Volume
+            document.getElementById('resVol').textContent = volume.charAt(0).toUpperCase() + volume.slice(1);
+
+            // Risk level
+            const riskText = isIllegalDumping ? '⚠️ Illegal Dumping Detected' : riskLevel.charAt(0).toUpperCase() + riskLevel.slice(1);
+            const riskColor = isIllegalDumping ? 'danger' : riskLevel === 'high' || riskLevel === 'critical' ? 'warning' : 'success';
+            document.getElementById('resRisk').innerHTML = `<span class="text-${riskColor}">${riskText}</span>`;
+
+            // Action recommendations
+            let actionHTML = '';
+            if (explanation) {
+                actionHTML += `<div style="margin-bottom: 12px; font-size: 0.85rem; color: var(--muted);">${explanation}</div>`;
+            }
+            if (recommendations && recommendations.length > 0) {
+                actionHTML += '<div style="font-weight: 600; margin-bottom: 8px;">Recommendations:</div>';
+                actionHTML += '<ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">';
+                recommendations.forEach(rec => {
+                    actionHTML += `<li style="margin-bottom: 4px;">${rec}</li>`;
+                });
+                actionHTML += '</ul>';
+            } else {
+                actionHTML += getDefaultRecommendations(wasteType, severityScore, isIllegalDumping);
+            }
+            document.getElementById('resAction').innerHTML = actionHTML;
+
+            document.getElementById('btnLog').disabled = false;
+            document.getElementById('btnAlert').disabled = false;
+        }
+
+        function getDefaultRecommendations(wasteType, severity, isIllegal) {
+            let html = '<div style="font-weight: 600; margin-bottom: 8px;">Recommendations:</div><ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">';
+            
+            if (isIllegal) {
+                html += '<li>Alert enforcement team immediately</li>';
+                html += '<li>Document location and perpetrators if possible</li>';
+            }
+            
+            if (severity >= 4) {
+                html += '<li>Deploy waste collection truck within 2 hours</li>';
+                html += '<li>Assign additional cleanup crew</li>';
+            } else if (severity >= 3) {
+                html += '<li>Schedule collection within next 24 hours</li>';
+            }
+
+            if (wasteType.includes('plastic')) {
+                html += '<li>Segregate plastic for recycling stream</li>';
+                html += '<li>Investigate source to prevent future dumping</li>';
+            } else if (wasteType.includes('organic')) {
+                html += '<li>Direct to composting facility</li>';
+                html += '<li>Monitor for odor and pest issues</li>';
+            } else if (wasteType.includes('medical') || wasteType.includes('hazardous')) {
+                html += '<li>⚠️ Use specialized hazmat collection procedures</li>';
+                html += '<li>Notify health department</li>';
+            } else if (wasteType.includes('construction')) {
+                html += '<li>Route to C&D waste processing center</li>';
+                html += '<li>Verify construction permit compliance</li>';
+            }
+
+            html += '</ul>';
+            return html;
         }
 
         function showMockResults() {

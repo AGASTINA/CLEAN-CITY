@@ -332,55 +332,7 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-header">
-        <h2>Algorithm Details</h2>
-      </div>
-      <div class="card glass">
-        <div style="padding: 20px 0;">
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Policy Generation Logic</div>
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
-              generatePolicy(wardId):<br/>
-              &nbsp;&nbsp;1. Calculate violation_rate (illegal dumps / total reports)<br/>
-              &nbsp;&nbsp;2. Calculate overflow_risk (from prediction module)<br/>
-              &nbsp;&nbsp;3. Count response_time violations<br/>
-              &nbsp;&nbsp;4. Analyze cleanliness_index<br/>
-              &nbsp;&nbsp;5. Generate recommendations based on thresholds:<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;IF violation_rate > 20% → Recommend CCTV<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;IF overflow_risk > 60% → Recommend Smart Bins<br/>
-              &nbsp;&nbsp;&nbsp;&nbsp;IF violations > 20 → Recommend Compost Unit<br/>
-              &nbsp;&nbsp;6. Calculate ROI and budget for each<br/>
-              &nbsp;&nbsp;7. Return ranked recommendations
-            </div>
-          </div>
 
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Recommendation Triggering Conditions</div>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 10px 0; color: var(--muted); border-bottom: 1px solid rgba(54, 240, 255, 0.1);">
-                <strong style="color: var(--emerald);">CCTV Network:</strong> Triggered when illegal dumping > 20% of reports
-              </li>
-              <li style="padding: 10px 0; color: var(--muted); border-bottom: 1px solid rgba(54, 240, 255, 0.1);">
-                <strong style="color: var(--emerald);">Smart Bins:</strong> Triggered when overflow risk probability > 60%
-              </li>
-              <li style="padding: 10px 0; color: var(--muted);">
-                <strong style="color: var(--emerald);">Compost Units:</strong> Triggered when violations > 20 in past month
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Impact Measurements</div>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; color: var(--muted);"><strong>CCTV:</strong> Reduces illegal dumping by 78%, ROI in 18 months</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>Smart Bins:</strong> Increases capacity efficiency by 45%, immediate ROI</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong>Compost:</strong> Reduces landfill load by 34%, ROI in 42 months</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <script src="intelligence.js"></script>

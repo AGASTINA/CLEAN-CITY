@@ -345,36 +345,7 @@
       </div>
     </section>
 
-    <section class="section">
-      <div class="section-header">
-        <h2>Truck Assignment Algorithm</h2>
-      </div>
-      <div class="card glass">
-        <div style="padding: 20px 0;">
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Algorithm</div>
-            <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.9rem;">
-              assignTruck(wardId):<br/>
-              &nbsp;&nbsp;1. Filter available (not busy) trucks<br/>
-              &nbsp;&nbsp;2. Calculate distance to alert ward<br/>
-              &nbsp;&nbsp;3. Assign truck with minimum distance<br/>
-              &nbsp;&nbsp;4. Update truck status to 'busy'<br/>
-              &nbsp;&nbsp;5. Generate assignment notification
-            </div>
-          </div>
 
-          <div style="margin-bottom: 20px;">
-            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Alert Severity Levels</div>
-            <ul style="list-style: none; padding: 0;">
-              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: #ff4d4d;">CRITICAL:</strong> Immediate multi-truck response required</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: #ffd700;">HIGH:</strong> Single truck dispatch within 30 minutes</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--cyan);">MEDIUM:</strong> Schedule within 2 hours</li>
-              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">LOW:</strong> Background monitoring</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
   </main>
 
   <script src="intelligence.js"></script>

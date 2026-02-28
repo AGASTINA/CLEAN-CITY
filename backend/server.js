@@ -22,6 +22,7 @@ const wardRoutes = require('./routes/wards');
 const analyticsRoutes = require('./routes/analytics');
 const policyRoutes = require('./routes/policy');
 const dashboardRoutes = require('./routes/dashboard');
+const intelligenceRoutes = require('./routes/intelligence');
 
 // Middleware
 app.use(express.json({ limit: '50mb' }));
@@ -66,6 +67,7 @@ app.use('/api/wards', wardRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/policy', policyRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/intelligence', intelligenceRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

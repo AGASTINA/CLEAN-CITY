@@ -198,120 +198,66 @@
     <div class="route-grid animate-fade-in">
         <!-- Configuration Panel -->
         <div class="glass-panel config-panel">
-            <h2 style="font-size: 1.2rem; margin: 0 0 16px;">AI Routing Controller</h2>
+            <h2 style="font-size: 1.2rem; margin: 0 0 16px;">📍 Live Ward Map</h2>
+            <p style="font-size: 0.85rem; color: var(--muted); margin: 0 0 20px;">Interactive map showing Madurai wards with real-time data</p>
 
             <div>
-                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Select Fleet
-                    Vehicle</label>
-                <select class="truck-select">
-                    <option>TR-04 (Heavy Compactor - Zone A)</option>
-                    <option>TR-09 (Light Tipper - Zone B)</option>
-                    <option>TR-12 (Bio-Waste Carrier)</option>
-                    <option>TR-18 (Heavy Compactor - Zone C)</option>
+                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Ward Statistics</label>
+                <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--muted); font-size: 0.8rem;">Total Wards:</span>
+                        <span id="totalWards" style="font-weight: 600;">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="color: var(--muted); font-size: 0.8rem;">Active Reports:</span>
+                        <span id="totalReports" style="font-weight: 600; color: var(--warning);">-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="color: var(--muted); font-size: 0.8rem;">Critical Zones:</span>
+                        <span id="criticalWards" style="font-weight: 600; color: var(--danger);">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Filter by Zone</label>
+                <select class="truck-select" id="zoneFilter" onchange="filterWards()">
+                    <option value="">All Zones</option>
+                    <option value="North">North Zone</option>
+                    <option value="South">South Zone</option>
+                    <option value="East">East Zone</option>
+                    <option value="West">West Zone</option>
+                    <option value="Central">Central Zone</option>
                 </select>
             </div>
 
             <div style="margin-top: 16px;">
-                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Select
-                    Hotspots for Route (3/6)</label>
-                <div class="hotspot-list">
-                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
-                        <div class="hotspot-checkbox"></div>
-                        <div class="hotspot-details">
-                            <h4>Simmakkal Market <span class="badge badge-high"
-                                    style="font-size: 0.55rem; margin-left: 4px;">CRITICAL</span></h4>
-                            <p>Organic overload • Est: 1.2T</p>
-                        </div>
-                    </div>
-                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
-                        <div class="hotspot-checkbox"></div>
-                        <div class="hotspot-details">
-                            <h4>Arapalayam Bus Stand</h4>
-                            <p>Mixed plastic • Est: 450kg</p>
-                        </div>
-                    </div>
-                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
-                        <div class="hotspot-checkbox"></div>
-                        <div class="hotspot-details">
-                            <h4>Ellis Nagar Housing</h4>
-                            <p>Overflow risk • Est: 600kg</p>
-                        </div>
-                    </div>
-                    <div class="hotspot-item" onclick="this.classList.toggle('selected')">
-                        <div class="hotspot-checkbox"></div>
-                        <div class="hotspot-details">
-                            <h4>Kalavasal Junction</h4>
-                            <p>C&D Dump • Est: 2.5T</p>
-                        </div>
+                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Recent Hotspots</label>
+                <div class="hotspot-list" id="hotspotList">
+                    <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 0.85rem;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">📍</div>
+                        Loading wards...
                     </div>
                 </div>
             </div>
 
-            <button class="btn btn-primary" style="margin-top: 24px; padding: 14px;" onclick="calculateRoute()">
-                🚀 Calculate Optimal Pathway
+            <button class="btn btn-primary" style="margin-top: 24px; padding: 14px;" onclick="refreshMap()">
+                🔄 Refresh Ward Data
             </button>
 
-            <!-- Savings Results -->
-            <div class="savings-panel" id="savingsPanel">
+            <!-- Ward Details Panel -->
+            <div class="savings-panel" id="wardDetailsPanel" style="display: none;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 1.2rem;">✨</span>
-                    <h3 style="margin: 0; font-size: 1rem; color: var(--success);">Route Calculated</h3>
+                    <span style="font-size: 1.2rem;">📍</span>
+                    <h3 style="margin: 0; font-size: 1rem; color: var(--cyan);" id="selectedWardName">Ward Details</h3>
                 </div>
 
-                <div class="savings-grid">
-                    <div class="saving-metric">
-                        <div class="saving-value">28%</div>
-                        <div class="saving-label">Distance Saved</div>
-                    </div>
-                    <div class="saving-metric">
-                        <div class="saving-value">4.2L</div>
-                        <div class="saving-label">Fuel Saved</div>
-                    </div>
-                    <div class="saving-metric">
-                        <div class="saving-value">45m</div>
-                        <div class="saving-label">Time Saved</div>
-                    </div>
-                    <div class="saving-metric">
-                        <div class="saving-value" style="color: var(--cyan);">₹380</div>
-                        <div class="saving-label">Cost Reduction</div>
-                    </div>
+                <div class="savings-grid" id="wardStats">
+                    <!-- Ward details will be populated here -->
                 </div>
 
-                <div style="margin-top: 20px;">
-                    <h4 style="font-size: 0.85rem; color: var(--muted); margin: 0 0 12px 0; text-transform: uppercase;">
-                        Generated Sequence</h4>
-
-                    <div class="route-step">
-                        <div class="step-number">1</div>
-                        <div>
-                            <div style="font-size: 0.9rem; font-weight: 600;">Depot (Start)</div>
-                        </div>
-                    </div>
-                    <div class="route-step">
-                        <div class="step-number">2</div>
-                        <div>
-                            <div style="font-size: 0.9rem; font-weight: 600;">Arapalayam Bus Stand</div>
-                            <div style="font-size: 0.75rem; color: var(--muted);">2.1 km • 8 mins</div>
-                        </div>
-                    </div>
-                    <div class="route-step">
-                        <div class="step-number">3</div>
-                        <div>
-                            <div style="font-size: 0.9rem; font-weight: 600;">Ellis Nagar Housing</div>
-                            <div style="font-size: 0.75rem; color: var(--muted);">1.8 km • 6 mins</div>
-                        </div>
-                    </div>
-                    <div class="route-step">
-                        <div class="step-number" style="background: var(--danger);">4</div>
-                        <div>
-                            <div style="font-size: 0.9rem; font-weight: 600; color: var(--danger);">Simmakkal Market
-                            </div>
-                            <div style="font-size: 0.75rem; color: var(--muted);">3.4 km • 14 mins</div>
-                        </div>
-                    </div>
-
-                    <button class="btn btn-success" style="width: 100%; margin-top: 24px;">Send Path to Driver
-                        App</button>
+                <div style="margin-top: 16px;" id="wardInfo">
+                    <!-- Additional ward information -->
                 </div>
             </div>
         </div>
@@ -324,116 +270,248 @@
     <script src="/pages/shared/navigation.js"></script>
     <script>
         let routeMap;
-        let routeLayer;
         let markersGroup;
+        let allWards = [];
+        let allReports = [];
+        const API_BASE = 'http://localhost:5000/api';
 
         document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 routeMap = L.map('routeMap', {
-                    zoomControl: false,
-                    attributionControl: false
-                }).setView([9.9252, 78.1198], 14);
+                    zoomControl: true,
+                    attributionControl: true
+                }).setView([9.9252, 78.1198], 13);
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    maxZoom: 19
+                // OpenStreetMap tiles like in the image
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap contributors'
                 }).addTo(routeMap);
 
                 markersGroup = L.layerGroup().addTo(routeMap);
-                routeLayer = L.layerGroup().addTo(routeMap);
 
-                // Add points
-                addMarkers();
+                // Load ward data
+                loadWardData();
             }, 300);
         });
 
-        function addMarkers() {
+        async function loadWardData() {
+            try {
+                // Fetch wards and reports
+                const [wardsRes, reportsRes] = await Promise.all([
+                    fetch(`${API_BASE}/wards`),
+                    fetch(`${API_BASE}/reports`)
+                ]);
+
+                const wardsData = await wardsRes.json();
+                const reportsData = await reportsRes.json();
+
+                allWards = wardsData.data || [];
+                allReports = reportsData.data || [];
+
+                // Update statistics
+                updateStatistics();
+
+                // Add ward markers to map
+                addWardMarkers();
+
+                // Update hotspot list
+                updateHotspotList();
+
+            } catch (error) {
+                console.error('Error loading ward data:', error);
+                // Show fallback data if API fails
+                loadFallbackData();
+            }
+        }
+
+        function loadFallbackData() {
+            // Fallback ward locations for Madurai
+            allWards = [
+                { wardNumber: 1, name: 'SS Colony', zone: 'Central', location: { latitude: 9.9252, longitude: 78.1198 } },
+                { wardNumber: 2, name: 'Anna Nagar', zone: 'East', location: { latitude: 9.9350, longitude: 78.1350 } },
+                { wardNumber: 3, name: 'Arapalayam', zone: 'North', location: { latitude: 9.9450, longitude: 78.1150 } },
+                { wardNumber: 4, name: 'Simmakkal', zone: 'Central', location: { latitude: 9.9180, longitude: 78.1280 } },
+                { wardNumber: 5, name: 'Ellis Nagar', zone: 'South', location: { latitude: 9.9100, longitude: 78.1200 } },
+                { wardNumber: 6, name: 'KK Nagar', zone: 'West', location: { latitude: 9.9300, longitude: 78.1050 } },
+                { wardNumber: 7, name: 'Pasumalai', zone: 'West', location: { latitude: 9.9050, longitude: 78.0950 } },
+                { wardNumber: 8, name: 'Meenakshi Nagar', zone: 'East', location: { latitude: 9.9400, longitude: 78.1450 } },
+                { wardNumber: 9, name: 'Thirunagar', zone: 'North', location: { latitude: 9.9550, longitude: 78.1250 } },
+                { wardNumber: 10, name: 'Vilangudi', zone: 'South', location: { latitude: 9.9000, longitude: 78.1400 } },
+                { wardNumber: 11, name: 'TVS Nagar', zone: 'Central', location: { latitude: 9.9280, longitude: 78.1320 } },
+                { wardNumber: 12, name: 'Colony', zone: 'East', location: { latitude: 9.9320, longitude: 78.1500 } },
+                { wardNumber: 13, name: 'Goripalayam', zone: 'Central', location: { latitude: 9.9220, longitude: 78.1150 } },
+                { wardNumber: 14, name: 'Bibikulam', zone: 'West', location: { latitude: 9.9150, longitude: 78.1000 } },
+                { wardNumber: 15, name: 'Anna Bus Stand', zone: 'Central', location: { latitude: 9.9280, longitude: 78.1235 } }
+            ];
+            allReports = [];
+            updateStatistics();
+            addWardMarkers();
+            updateHotspotList();
+        }
+
+        function updateStatistics() {
+            document.getElementById('totalWards').textContent = allWards.length;
+            document.getElementById('totalReports').textContent = allReports.length;
+            
+            // Count critical wards (those with high severity reports)
+            const criticalCount = allWards.filter(w => {
+                const wardReports = allReports.filter(r => r.wardNumber === w.wardNumber);
+                return wardReports.some(r => r.severityScore >= 4);
+            }).length;
+            document.getElementById('criticalWards').textContent = criticalCount;
+        }
+
+        function addWardMarkers() {
             markersGroup.clearLayers();
 
-            const points = [
-                { lat: 9.9212, lng: 78.1108, name: "Depot", type: "start" },
-                { lat: 9.9302, lng: 78.1158, name: "Arapalayam", type: "point" },
-                { lat: 9.9380, lng: 78.1250, name: "Ellis Nagar", type: "point" },
-                { lat: 9.9200, lng: 78.1350, name: "Simmakkal", type: "critical" }
-            ];
+            const zoneFilter = document.getElementById('zoneFilter')?.value;
 
-            points.forEach((p, i) => {
-                const color = p.type === 'start' ? '#3b82f6' :
-                    p.type === 'critical' ? '#ef4444' : '#f59e0b';
+            allWards.forEach(ward => {
+                // Apply zone filter
+                if (zoneFilter && ward.zone !== zoneFilter) return;
 
-                L.circleMarker([p.lat, p.lng], {
-                    radius: p.type === 'start' ? 12 : 8,
+                const lat = ward.location?.latitude || ward.centerPoint?.[0] || 9.9252;
+                const lng = ward.location?.longitude || ward.centerPoint?.[1] || 78.1198;
+
+                // Count reports for this ward
+                const wardReports = allReports.filter(r => r.wardNumber === ward.wardNumber);
+                const criticalReports = wardReports.filter(r => r.severityScore >= 4).length;
+
+                // Color based on reports
+                const color = criticalReports > 0 ? '#ef4444' : wardReports.length > 2 ? '#f59e0b' : '#3b82f6';
+
+                const marker = L.circleMarker([lat, lng], {
+                    radius: 8,
                     fillColor: color,
                     color: '#fff',
                     weight: 2,
                     opacity: 1,
-                    fillOpacity: 0.8
-                }).bindTooltip(p.name, { permanent: true, direction: 'right', offset: [10, 0], className: 'map-tooltip' }).addTo(markersGroup);
-            });
+                    fillOpacity: 0.7
+                }).addTo(markersGroup);
 
-            // Add custom style for tooltips
-            const style = document.createElement('style');
-            style.innerHTML = `
-                .map-tooltip {
-                    background: rgba(10, 14, 26, 0.8);
-                    border: 1px solid rgba(255, 255, 255, 0.2);
-                    color: white;
-                    border-radius: 4px;
-                    font-size: 0.8rem;
-                }
-                .leaflet-tooltip-left::before { border-left-color: rgba(10, 14, 26, 0.8); }
-                .leaflet-tooltip-right::before { border-right-color: rgba(10, 14, 26, 0.8); }
+                // Click handler
+                marker.on('click', () => {
+                    showWardDetails(ward, wardReports);
+                });
+
+                // Tooltip
+                marker.bindTooltip(`Ward ${ward.wardNumber}: ${ward.name || 'Unknown'}`, {
+                    direction: 'top',
+                    offset: [0, -10]
+                });
+            });
+        }
+
+        function updateHotspotList() {
+            const hotspotList = document.getElementById('hotspotList');
+            if (!hotspotList) return;
+
+            // Get wards with reports, sorted by severity
+            const wardsWithReports = allWards.map(ward => {
+                const wardReports = allReports.filter(r => r.wardNumber === ward.wardNumber);
+                const avgSeverity = wardReports.length > 0 
+                    ? wardReports.reduce((sum, r) => sum + (r.severityScore || 3), 0) / wardReports.length 
+                    : 0;
+                return { ward, reportsCount: wardReports.length, avgSeverity };
+            }).filter(w => w.reportsCount > 0).sort((a, b) => b.avgSeverity - a.avgSeverity).slice(0, 5);
+
+            if (wardsWithReports.length === 0) {
+                hotspotList.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: var(--muted); font-size: 0.85rem;">
+                        <div style="font-size: 2rem; margin-bottom: 8px;">✅</div>
+                        No active hotspots
+                    </div>
+                `;
+                return;
+            }
+
+            hotspotList.innerHTML = wardsWithReports.map(({ ward, reportsCount, avgSeverity }) => {
+                const badgeClass = avgSeverity >= 4 ? 'badge-high' : avgSeverity >= 3 ? 'badge-medium' : 'badge-low';
+                const badgeText = avgSeverity >= 4 ? 'CRITICAL' : avgSeverity >= 3 ? 'HIGH' : 'MODERATE';
+                
+                return `
+                    <div class="hotspot-item" onclick="focusOnWard(${ward.wardNumber})" style="cursor: pointer;">
+                        <div style="width: 8px; height: 8px; border-radius: 50%; background: ${avgSeverity >= 4 ? '#ef4444' : '#f59e0b'};"></div>
+                        <div class="hotspot-details" style="flex: 1;">
+                            <h4>Ward ${ward.wardNumber}: ${ward.name || 'Unknown'} 
+                                <span class="badge ${badgeClass}" style="font-size: 0.55rem; margin-left: 4px;">${badgeText}</span>
+                            </h4>
+                            <p>${reportsCount} active report${reportsCount !== 1 ? 's' : ''} • Avg severity: ${avgSeverity.toFixed(1)}</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function focusOnWard(wardNumber) {
+            const ward = allWards.find(w => w.wardNumber === wardNumber);
+            if (!ward) return;
+
+            const lat = ward.location?.latitude || ward.centerPoint?.[0] || 9.9252;
+            const lng = ward.location?.longitude || ward.centerPoint?.[1] || 78.1198;
+
+            routeMap.setView([lat, lng], 15, { animate: true });
+            
+            const wardReports = allReports.filter(r => r.wardNumber === ward.wardNumber);
+            showWardDetails(ward, wardReports);
+        }
+
+        function showWardDetails(ward, reports) {
+            const panel = document.getElementById('wardDetailsPanel');
+            const nameEl = document.getElementById('selectedWardName');
+            const statsEl = document.getElementById('wardStats');
+            const infoEl = document.getElementById('wardInfo');
+
+            panel.style.display = 'block';
+            nameEl.textContent = `Ward ${ward.wardNumber}: ${ward.name || 'Unknown'}`;
+
+            // Calculate statistics
+            const criticalReports = reports.filter(r => r.severityScore >= 4).length;
+            const avgSeverity = reports.length > 0 
+                ? reports.reduce((sum, r) => sum + (r.severityScore || 3), 0) / reports.length 
+                : 0;
+
+            statsEl.innerHTML = `
+                <div class="saving-metric">
+                    <div class="saving-value">${reports.length}</div>
+                    <div class="saving-label">Total Reports</div>
+                </div>
+                <div class="saving-metric">
+                    <div class="saving-value" style="color: var(--danger);">${criticalReports}</div>
+                    <div class="saving-label">Critical</div>
+                </div>
+                <div class="saving-metric">
+                    <div class="saving-value" style="color: var(--warning);">${avgSeverity.toFixed(1)}</div>
+                    <div class="saving-label">Avg Severity</div>
+                </div>
+                <div class="saving-metric">
+                    <div class="saving-value" style="color: var(--cyan);">${ward.zone || 'N/A'}</div>
+                    <div class="saving-label">Zone</div>
+                </div>
             `;
-            document.head.appendChild(style);
+
+            infoEl.innerHTML = `
+                <div style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 8px; font-size: 0.85rem;">
+                    <div style="color: var(--muted); margin-bottom: 4px;">Area: ${ward.area || 'N/A'} km²</div>
+                    <div style="color: var(--muted); margin-bottom: 4px;">Population: ${ward.population?.toLocaleString() || 'N/A'}</div>
+                    <div style="color: var(--muted);">Officer: ${ward.staff?.wardOfficer?.name || 'Unassigned'}</div>
+                </div>
+            `;
+
+            // Scroll panel into view
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        function calculateRoute() {
-            // Show savings panel
-            document.getElementById('savingsPanel').style.display = 'block';
-
-            // Draw route on map
-            routeLayer.clearLayers();
-
-            const routePoints = [
-                [9.9212, 78.1108], // Depot
-                [9.9262, 78.1128],
-                [9.9302, 78.1158], // Arapalayam
-                [9.9350, 78.1200],
-                [9.9380, 78.1250], // Ellis Nagar
-                [9.9300, 78.1300],
-                [9.9200, 78.1350]  // Simmakkal
-            ];
-
-            // Draw line
-            L.polyline(routePoints, {
-                color: '#36f0ff',
-                weight: 4,
-                opacity: 0.8,
-                dashArray: '10, 10',
-                lineJoin: 'round'
-            }).addTo(routeLayer);
-
-            // Animate truck
-            let truckIcon = L.divIcon({
-                html: '<div style="font-size: 24px; filter: drop-shadow(0 0 5px rgba(54, 240, 255, 0.8));">🚛</div>',
-                iconSize: [30, 30],
-                className: 'truck-marker'
-            });
-
-            let truckMarker = L.marker(routePoints[0], { icon: truckIcon }).addTo(routeLayer);
-
-            // Simple animation
-            let step = 0;
-            const animate = setInterval(() => {
-                step++;
-                if (step >= routePoints.length) {
-                    clearInterval(animate);
-                    return;
-                }
-                truckMarker.setLatLng(routePoints[step]);
-            }, 1000);
-
-            routeMap.fitBounds(L.polyline(routePoints).getBounds(), { padding: [50, 50] });
+        function filterWards() {
+            addWardMarkers();
         }
+
+        function refreshMap() {
+            loadWardData();
+        }
+
+
     </script>
 </body>
 

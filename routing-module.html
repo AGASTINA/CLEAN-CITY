@@ -289,35 +289,15 @@
 
     <section class="section">
       <div class="section-header">
-        <h2>Algorithm Details</h2>
+        <h2>Route Optimization Performance</h2>
       </div>
       <div class="card glass">
-        <div class="tsp-explanation">
-          <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Traveling Salesman Problem (TSP)</div>
-          <p style="color: var(--muted); margin: 8px 0; font-size: 0.9rem;">
-            Greedy nearest-neighbor algorithm: Start at first location, always move to the nearest unvisited waypoint.
-            Reduces redundant travel by ~25% compared to standard routes.
-          </p>
-        </div>
-
-        <div style="margin-top: 20px;">
-          <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Distance Formula</div>
-          <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; line-height: 1.6;">
-            <strong>Haversine Formula:</strong><br/>
-            a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)<br/>
-            c = 2 ⋅ atan2(√a, √(1−a))<br/>
-            distance = R ⋅ c<br/>
-            <br/>
-            where R = 6371 km (Earth radius)<br/>
-            φ = latitude, λ = longitude
-          </div>
-        </div>
-
-        <div style="margin-top: 20px;">
-          <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Efficiency Gains</div>
-          <ul style="list-style: none; padding: 0;">
-            <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">Fuel Savings:</strong> 25% reduction vs baseline</li>
-            <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">Time Efficiency:</strong> 30% faster collection</li>
+        <div style="padding: 20px 0;">
+          <div style="margin-bottom: 20px;">
+            <div style="color: var(--cyan); font-weight: 600; margin-bottom: 8px;">Optimization Results</div>
+            <ul style="list-style: none; padding: 0;">
+              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">Fuel Savings:</strong> 25% reduction vs baseline</li>
+              <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">Time Efficiency:</strong> 30% faster collection</li>
             <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">Cost Reduction:</strong> ₹500-1200 per truck per day</li>
             <li style="padding: 8px 0; color: var(--muted);"><strong style="color: var(--emerald);">CO₂ Reduction:</strong> ~50kg per truck per day</li>
           </ul>

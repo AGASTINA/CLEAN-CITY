@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 const http = require('http');
 const socketIo = require('socket.io');
+const path = require('path');
 const { admin } = require('./config/firestore');
 
 const app = express();
@@ -33,6 +34,9 @@ app.use(cors({
   origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
   credentials: true
 }));
+
+// Serve static files from parent directory
+app.use(express.static(path.join(__dirname, '..')));
 
 // Request logging
 app.use((req, res, next) => {
@@ -140,18 +144,21 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   🌿 MadurAI Urban Intelligence Grid (MUIG) Backend      ║
+║   🌿 MadurAI Urban Intelligence Grid (MUIG)              ║
 ║                                                           ║
 ║   Status: ✅ RUNNING                                      ║
 ║   Port: ${PORT}                                             ║
 ║   Environment: ${process.env.NODE_ENV || 'development'}                                  ║
 ║   Firestore: ${admin.apps.length ? '✅ Initialized' : '❌ Uninitialized'}                               ║
+║                                                           ║
+║   🌐 Frontend: http://localhost:${PORT}                          ║
+║   🔌 API: http://localhost:${PORT}/api                           ║
 ║                                                           ║
 ║   Powered by: Gemini AI + Google Cloud                   ║
 ║   Government-Grade Intelligence Platform                  ║

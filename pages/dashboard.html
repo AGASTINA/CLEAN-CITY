@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+    
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 24px;
+        }
+
+        .map-container {
+            height: 500px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--cyan);
+        }
+
+        .stat-card.warning::before { background: var(--warning); }
+        .stat-card.danger::before { background: var(--danger); }
+        .stat-card.success::before { background: var(--success); }
+
+        .stat-title {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+
+        .stat-trend {
+            font-size: 0.85rem;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        .trend-up { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+        .trend-down { background: rgba(239, 68, 68, 0.2); color: var(--danger); }
+
+        .activity-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(54, 240, 255, 0.1);
+            color: var(--cyan);
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .activity-content h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .activity-content p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+        
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+            display: block;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 400;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .map-btn {
+            background: rgba(17, 24, 39, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s;
+        }
+
+        .map-btn:hover, .map-btn.active {
+            background: var(--cyan);
+            color: #000;
+        }
+
+        @media (max-width: 1200px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Content injected dynamically by navigation.js -->
+    
+    <div class="stats-grid animate-fade-in">
+        <div class="stat-card">
+            <div class="stat-title">Active AI Detections</div>
+            <div class="stat-value">3,204 <span class="stat-trend trend-down">↓ 12%</span></div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Resolved: 2,891 (90%)</div>
+        </div>
+        <div class="stat-card warning">
+            <div class="stat-title">Overflow Risk Wards</div>
+            <div class="stat-value">6 <span class="stat-trend trend-up">↑ 2</span></div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Prediction Accuracy: 94%</div>
+        </div>
+        <div class="stat-card danger">
+            <div class="stat-title">Illegal Dumping Alerts</div>
+            <div class="stat-value">24 <span class="badge badge-high" style="margin-left:auto;">CRITICAL</span></div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Requires Enforcement</div>
+        </div>
+        <div class="stat-card success">
+            <div class="stat-title">Active Fleet Status</div>
+            <div class="stat-value">42/45 <span class="stat-trend trend-up">On Route</span></div>
+            <div style="font-size: 0.8rem; color: var(--muted); margin-top: 8px;">Fuel Saved Today: 180 L</div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid animate-fade-in" style="animation-delay: 0.1s;">
+        <!-- Map Panel -->
+        <div class="glass-panel" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
+            <div class="panel-title" style="padding: 20px 24px 0;">
+                <div>
+                    <div>Live Command Map</div>
+                    <div style="font-size: 0.8rem; color: var(--muted); font-weight: 400; margin-top: 4px;">Real-time CCTV & Citizen Reporting Overlay</div>
+                </div>
+            </div>
+            
+            <div id="mainMap" class="map-container" style="flex: 1; margin: 20px; height: 500px;">
+                <div class="map-controls">
+                    <button class="map-btn active" id="btn-hotspots" title="Waste Hotspots">📍</button>
+                    <button class="map-btn" id="btn-heatmap" title="AI Risk Heatmap">🌡️</button>
+                    <button class="map-btn" id="btn-trucks" title="Live Fleet Setup">🚛</button>
+                    <button class="map-btn" onclick="mainMap.setView([9.9252, 78.1198], 13)" title="Center Map">🎯</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Panel -->
+        <div class="glass-panel">
+            <div class="panel-title flex-between">
+                <span>Live AI Activity</span>
+                <span class="status-indicator">
+                    <div class="status-dot"></div> Live
+                </span>
+            </div>
+            
+            <div class="activity-feed">
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: var(--danger); background: rgba(239, 68, 68, 0.1);">📹</div>
+                    <div class="activity-content">
+                        <h4>Illegal Dumping Detected</h4>
+                        <p>CCTV Cam-42 identified construction debris dumping.</p>
+                        <span class="activity-time">Just now • Ward 14</span>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: var(--warning); background: rgba(245, 158, 11, 0.1);">⚠️</div>
+                    <div class="activity-content">
+                        <h4>Overflow Risk Predicted</h4>
+                        <p>Bin ID-894 capacity at 85%. Routing truck TR-04.</p>
+                        <span class="activity-time">4m ago • Ward 07</span>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: var(--success); background: rgba(16, 185, 129, 0.1);">✅</div>
+                    <div class="activity-content">
+                        <h4>Hotspot Cleared</h4>
+                        <p>Citizen report #8942 resolved. 450kg plastic collected.</p>
+                        <span class="activity-time">12m ago • Ward 02</span>
+                    </div>
+                </div>
+
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: var(--cyan); background: rgba(54, 240, 255, 0.1);">🤖</div>
+                    <div class="activity-content">
+                        <h4>AI Segregation Match</h4>
+                        <p>Organic batch matched with Bio-CNG plant processor.</p>
+                        <span class="activity-time">28m ago • System</span>
+                    </div>
+                </div>
+                
+                <div class="activity-item">
+                    <div class="activity-icon" style="color: var(--primary); background: rgba(59, 130, 246, 0.1);">📋</div>
+                    <div class="activity-content">
+                        <h4>Daily Report Generated</h4>
+                        <p>Governance sync report sent to Commissioner's office.</p>
+                        <span class="activity-time">1h ago • System</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" style="width: 100%; margin-top: 20px;">View Full Log</button>
+        </div>
+    </div>
+
+    <!-- Ward Summary -->
+    <div class="glass-panel mt-4 animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="panel-title">Ward Intelligence Overview</div>
+        
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ward / Zone</th>
+                    <th>Cleanliness Score</th>
+                    <th>Active Issues</th>
+                    <th>AI Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Ward 12 (Meenakshi Temple Zone)</strong><br><span style="font-size:0.8rem;color:var(--muted);">Pop: 45,200</span></td>
+                    <td><span class="text-success" style="font-weight: 700; font-size: 1.1rem;">94.2</span></td>
+                    <td>12</td>
+                    <td><span class="badge badge-low">OPTIMAL</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">View Details</button></td>
+                </tr>
+                <tr>
+                    <td><strong>Ward 07 (Simmakkal Market)</strong><br><span style="font-size:0.8rem;color:var(--muted);">Pop: 38,500</span></td>
+                    <td><span class="text-warning" style="font-weight: 700; font-size: 1.1rem;">76.8</span></td>
+                    <td>45</td>
+                    <td><span class="badge badge-medium">RISK PREDICTED</span></td>
+                    <td><button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem;">Optimize Route</button></td>
+                </tr>
+                <tr>
+                    <td><strong>Ward 14 (Arapalayam)</strong><br><span style="font-size:0.8rem;color:var(--muted);">Pop: 52,100</span></td>
+                    <td><span class="text-danger" style="font-weight: 700; font-size: 1.1rem;">62.4</span></td>
+                    <td>89</td>
+                    <td><span class="badge badge-high">CRITICAL LOAD</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem; color: var(--danger); border-color: rgba(239, 68, 68, 0.3);">Enforcement Act</button></td>
+                </tr>
+                <tr>
+                    <td><strong>Ward 02 (Anna Nagar)</strong><br><span style="font-size:0.8rem;color:var(--muted);">Pop: 41,000</span></td>
+                    <td><span class="text-success" style="font-weight: 700; font-size: 1.1rem;">88.5</span></td>
+                    <td>18</td>
+                    <td><span class="badge badge-low">STABLE</span></td>
+                    <td><button class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">View Details</button></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/pages/shared/navigation.js"></script>
+    <script>
+        // Init Map
+        let mainMap;
+        let markersGroup;
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            // Need slight delay to ensure container is sized before map init
+            setTimeout(() => {
+                mainMap = L.map('mainMap', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([9.9252, 78.1198], 13);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(mainMap);
+
+                markersGroup = L.layerGroup().addTo(mainMap);
+
+                // Add sample data points
+                const hotspots = [
+                    { lat: 9.9252, lng: 78.1198, intensity: 'high', type: 'Illegal Dumping' },
+                    { lat: 9.9180, lng: 78.1290, intensity: 'medium', type: 'Bin Overflow Risk' },
+                    { lat: 9.9350, lng: 78.1150, intensity: 'high', type: 'Construction Waste' },
+                    { lat: 9.9280, lng: 78.1320, intensity: 'low', type: 'Citizen Report' },
+                    { lat: 9.9150, lng: 78.1100, intensity: 'medium', type: 'Plastic Accumulation' },
+                    { lat: 9.9400, lng: 78.1050, intensity: 'low', type: 'Organic Waste' },
+                    { lat: 9.9100, lng: 78.1400, intensity: 'high', type: 'Commercial Waste' }
+                ];
+
+                hotspots.forEach(spot => {
+                    const color = spot.intensity === 'high' ? '#ef4444' : 
+                                 spot.intensity === 'medium' ? '#f59e0b' : '#10b981';
+                    
+                    const marker = L.circleMarker([spot.lat, spot.lng], {
+                        radius: spot.intensity === 'high' ? 14 : spot.intensity === 'medium' ? 10 : 8,
+                        fillColor: color,
+                        color: color,
+                        weight: 2,
+                        opacity: 0.8,
+                        fillOpacity: 0.4
+                    });
+                    
+                    marker.bindPopup(`
+                        <div style="background:var(--bg-card); color:var(--text); padding:8px; border-radius:8px;">
+                            <strong style="color:${color}; display:block; margin-bottom:4px;">${spot.intensity.toUpperCase()} PRIORITY</strong>
+                            ${spot.type}<br>
+                            <button style="margin-top:8px; background:${color}; border:none; color:#000; padding:4px 8px; border-radius:4px; font-weight:bold; cursor:pointer;">Assign Resource</button>
+                        </div>
+                    `);
+                    
+                    marker.addTo(markersGroup);
+                });
+                
+                // Toggle controls mock
+                const btns = document.querySelectorAll('.map-btn');
+                btns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        if(this.id === '') return; // Skip center map btn
+                        btns.forEach(b => { if(b.id !== '') b.classList.remove('active') });
+                        this.classList.add('active');
+                        // In a real app this would toggle layers
+                    });
+                });
+                
+            }, 300);
+        });
+    </script>
+</body>
+</html>

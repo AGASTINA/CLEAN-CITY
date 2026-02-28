@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Detection – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+
+    <style>
+        .detection-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(54, 240, 255, 0.3);
+            border-radius: 16px;
+            padding: 40px 20px;
+            text-align: center;
+            background: rgba(10, 14, 26, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--cyan);
+            background: rgba(54, 240, 255, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--cyan);
+            margin-bottom: 16px;
+        }
+
+        .upload-text {
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+
+        .upload-options {
+            display: flex;
+            gap: 12px;
+            z-index: 10;
+        }
+
+        #imagePreview {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+            z-index: 5;
+            display: none;
+        }
+
+        .scanning-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 8;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .scan-line {
+            width: 100%;
+            height: 4px;
+            background: var(--cyan);
+            box-shadow: 0 0 15px var(--cyan);
+            position: absolute;
+            top: 0;
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0;
+            }
+
+            50% {
+                top: 100%;
+            }
+
+            100% {
+                top: 0;
+            }
+        }
+
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            opacity: 0.5;
+            /* Disabled state initially */
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .results-panel.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid transparent;
+        }
+
+        .result-item.highlight {
+            border-left-color: var(--cyan);
+            background: rgba(54, 240, 255, 0.05);
+        }
+
+        .result-label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .confidence-bar-bg {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .confidence-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--cyan), var(--emerald));
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        .recent-scans {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .scan-thumb {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scan-thumb:hover {
+            border-color: var(--cyan);
+        }
+
+        .scan-badge {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .detection-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .recent-scans {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glass-panel mb-4 animate-fade-in">
+        <div class="panel-title">
+            <span style="font-size: 1.5rem; margin-right: 8px;">♊</span> Gemini Vision Inference Engine
+        </div>
+        <p class="text-muted" style="margin-top: 0;">Upload or capture an image of unsegregated waste to classify type,
+            analyze sentiment, and predict circular economy pathways.</p>
+
+        <div class="detection-grid mt-4">
+            <!-- Left: Upload Area -->
+            <div class="upload-container">
+                <div class="upload-area" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                    <img id="imagePreview" src="" alt="Preview">
+
+                    <div class="scanning-overlay" id="scanningOverlay">
+                        <div class="scan-line"></div>
+                        <div style="font-size: 2rem; margin-bottom: 10px;">🧠</div>
+                        <div style="font-weight: 600; color: var(--cyan);">Running Vision Models...</div>
+                        <div style="font-size: 0.8rem; color: var(--muted); margin-top: 4px;">Classifying waste streams
+                        </div>
+                    </div>
+
+                    <div id="uploadPlaceholder">
+                        <div class="upload-icon">📸</div>
+                        <div class="upload-text">Drag & drop image here or click to browse</div>
+                        <div class="upload-options" onclick="event.stopPropagation()">
+                            <button class="btn btn-primary"
+                                onclick="document.getElementById('fileInput').click()">Browse Files</button>
+                            <button class="btn btn-secondary">Open Camera</button>
+                        </div>
+                    </div>
+
+                    <button id="resetBtn" class="btn btn-secondary"
+                        style="position: absolute; top: 10px; right: 10px; z-index: 10; display: none;"
+                        onclick="resetCapture(event)">Reset</button>
+                </div>
+                <input type="file" id="fileInput" accept="image/*">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px;">
+                    <div style="font-size: 0.8rem; color: var(--muted);">Supported formats: JPG, PNG, WebP</div>
+                    <button class="btn btn-success" id="analyzeBtn" style="display: none;" onclick="runAnalysis()">Run
+                        AI Analysis</button>
+                </div>
+            </div>
+
+            <!-- Right: Results Panel -->
+            <div class="results-panel" id="resultsPanel">
+                <h3 style="margin: 0 0 8px; color: var(--cyan);">Analysis Results</h3>
+
+                <div class="result-item highlight">
+                    <div>
+                        <div class="result-label">Primary Waste Type</div>
+                        <div class="result-value text-cyan" id="resType">Awaiting Image</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div class="result-label">Confidence</div>
+                        <div class="result-value" id="resConf">--%</div>
+                    </div>
+                </div>
+
+                <div class="confidence-bar-bg">
+                    <div class="confidence-bar-fill" id="confBar"></div>
+                </div>
+
+                <div class="result-item" style="margin-top: 8px;">
+                    <div class="result-label">Severity Level</div>
+                    <div class="result-value" id="resSeverity">--</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Estimated Volume</div>
+                    <div class="result-value" id="resVol">--</div>
+                </div>
+
+                <div class="result-item">
+                    <div class="result-label">Illegal Dumping Risk</div>
+                    <div class="result-value" id="resRisk">--</div>
+                </div>
+
+                <div class="result-item highlight" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                    <div class="result-label">AI Action Recommendation</div>
+                    <div style="font-size: 0.9rem;" id="resAction">Upload an image to get governance recommendations.
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: auto;">
+                    <button class="btn btn-primary" style="flex: 1;" disabled id="btnLog">Log to Database</button>
+                    <button class="btn btn-danger" style="flex: 1;" disabled id="btnAlert">Issue Alert</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historical Data -->
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="panel-title flex-between">
+            <span>Recent Processed Images</span>
+            <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 6px 12px;">View All Logs</button>
+        </div>
+
+        <div class="recent-scans">
+            <div class="scan-thumb"
+                style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=200');">
+                <span class="scan-badge badge-high">PLASTIC</span>
+                <div style="position: absolute; bottom: 8px; left: 8px; font-size: 0.7rem; color: white;">92% Match
+                </div>
+            </div>
+            <div class="scan-thumb"
+                style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&q=80&w=200');">
+                <span class="scan-badge badge-low">ORGANIC</span>
+                <div style="position: absolute; bottom: 8px; left: 8px; font-size: 0.7rem; color: white;">88% Match
+                </div>
+            </div>
+            <div class="scan-thumb"
+                style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1594916328320-be1adfbdbd4b?auto=format&fit=crop&q=80&w=200');">
+                <span class="scan-badge badge-medium">MIXED</span>
+                <div style="position: absolute; bottom: 8px; left: 8px; font-size: 0.7rem; color: white;">81% Match
+                </div>
+            </div>
+            <div class="scan-thumb"
+                style="background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1550989460-0adf9ea622e2?auto=format&fit=crop&q=80&w=200');">
+                <span class="scan-badge badge-high">E-WASTE</span>
+                <div style="position: absolute; bottom: 8px; left: 8px; font-size: 0.7rem; color: white;">96% Match
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/pages/shared/navigation.js"></script>
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadPlaceholder = document.getElementById('uploadPlaceholder');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const scanningOverlay = document.getElementById('scanningOverlay');
+        const resultsPanel = document.getElementById('resultsPanel');
+
+        // Drag and drop handlers
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                imagePreview.src = e.target.result;
+                imagePreview.style.display = 'block';
+                uploadPlaceholder.style.display = 'none';
+                analyzeBtn.style.display = 'block';
+                resetBtn.style.display = 'block';
+
+                // Reset results
+                resultsPanel.classList.remove('active');
+                document.getElementById('confBar').style.width = '0%';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function resetCapture(event) {
+            if (event) event.stopPropagation();
+            fileInput.value = '';
+            imagePreview.src = '';
+            imagePreview.style.display = 'none';
+            uploadPlaceholder.style.display = 'flex';
+            analyzeBtn.style.display = 'none';
+            resetBtn.style.display = 'none';
+            resultsPanel.classList.remove('active');
+
+            document.getElementById('resType').textContent = 'Awaiting Image';
+            document.getElementById('resConf').textContent = '--%';
+            document.getElementById('resSeverity').textContent = '--';
+            document.getElementById('resVol').textContent = '--';
+            document.getElementById('resRisk').textContent = '--';
+            document.getElementById('resAction').textContent = 'Upload an image to get governance recommendations.';
+            document.getElementById('confBar').style.width = '0%';
+
+            document.getElementById('btnLog').disabled = true;
+            document.getElementById('btnAlert').disabled = true;
+        }
+
+        function runAnalysis() {
+            analyzeBtn.disabled = true;
+            scanningOverlay.style.display = 'flex';
+
+            // Mock API delay
+            setTimeout(() => {
+                scanningOverlay.style.display = 'none';
+                analyzeBtn.disabled = false;
+                analyzeBtn.style.display = 'none'; // Hide after running
+                showMockResults();
+            }, 2500);
+        }
+
+        function showMockResults() {
+            resultsPanel.classList.add('active');
+
+            document.getElementById('resType').textContent = 'Mixed Segregation (Plastic High)';
+            document.getElementById('resConf').textContent = '94.2%';
+            document.getElementById('confBar').style.width = '94.2%';
+
+            document.getElementById('resSeverity').innerHTML = '<span class="text-danger" style="font-weight:700;">HIGH</span>';
+            document.getElementById('resVol').textContent = 'Approx 400-500 kg';
+            document.getElementById('resRisk').innerHTML = '<span class="text-warning">Probable Commercial Dumping</span>';
+
+            document.getElementById('resAction').innerHTML = '1. Route <strong>Truck TR-09</strong> immediately.<br>2. Alert ward enforcement officer to investigate nearby commercial complexes for C&D or bulk plastic waste violations.';
+
+            document.getElementById('btnLog').disabled = false;
+            document.getElementById('btnAlert').disabled = false;
+        }
+    </script>
+</body>
+
+</html>

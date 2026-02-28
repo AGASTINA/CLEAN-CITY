@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enforcement – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+
+    <style>
+        .enforcement-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 24px;
+        }
+
+        .alert-card {
+            border-left: 4px solid transparent;
+            padding: 16px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 16px;
+            transition: all 0.2s;
+        }
+
+        .alert-card:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .alert-card.critical {
+            border-left-color: var(--danger);
+            background: rgba(239, 68, 68, 0.05);
+        }
+
+        .alert-card.high {
+            border-left-color: var(--warning);
+        }
+
+        .alert-card.medium {
+            border-left-color: var(--cyan);
+        }
+
+        .cam-feed {
+            width: 120px;
+            height: 80px;
+            border-radius: 8px;
+            background-color: #000;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .cam-feed::after {
+            content: 'REC •';
+            position: absolute;
+            top: 4px;
+            left: 6px;
+            color: red;
+            font-size: 0.6rem;
+            font-weight: 700;
+            animation: blink 2s infinite;
+        }
+
+        @keyframes blink {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        .alert-info {
+            flex: 1;
+        }
+
+        .alert-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .alert-title {
+            font-weight: 600;
+            color: var(--text);
+            margin: 0;
+        }
+
+        .alert-meta {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 8px;
+        }
+
+        .alert-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .heat-graph {
+            height: 160px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, rgba(54, 240, 255, 0.1), rgba(30, 142, 62, 0.2));
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-end;
+            padding: 10px;
+            gap: 4px;
+        }
+
+        .heat-bar {
+            flex: 1;
+            background: var(--cyan);
+            border-radius: 4px 4px 0 0;
+            min-height: 5px;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .heat-bar:hover {
+            opacity: 1;
+            background: var(--emerald);
+        }
+
+        .suspect-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .suspect-avatar {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: grid;
+            place-items: center;
+            font-size: 1.2rem;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .q-stat {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 1000px) {
+            .enforcement-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="enforcement-grid">
+        <!-- Main Incident Log -->
+        <div class="glass-panel animate-fade-in">
+            <div class="panel-title flex-between">
+                <span>Active CCTV Incident Log</span>
+                <span class="badge badge-high">6 CRITICAL</span>
+            </div>
+
+            <div class="alert-list">
+                <!-- Alert 1 -->
+                <div class="alert-card critical">
+                    <div class="cam-feed"
+                        style="background-image: url('https://images.unsplash.com/photo-1616423640778-28d1b53229bd?auto=format&fit=crop&q=80&w=200');">
+                    </div>
+                    <div class="alert-info">
+                        <div class="alert-header">
+                            <h4 class="alert-title text-danger">Commercial Illegal Dumping</h4>
+                            <span class="badge badge-high">ACT NOW</span>
+                        </div>
+                        <div class="alert-meta">
+                            Cam: JNC-14 (Simmakkal) • Timestamp: Just Now
+                        </div>
+                        <p style="font-size: 0.85rem; margin: 0 0 10px; color: var(--muted);">Vehicle identified
+                            (TN59-XX-XXXX) unloading bulk construction debris in no-dumping zone.</p>
+                        <div class="alert-actions">
+                            <button class="btn btn-primary" style="padding: 4px 12px; font-size: 0.75rem;">Dispatch
+                                Patrol</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;">Generate
+                                e-Challan</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert 2 -->
+                <div class="alert-card high">
+                    <div class="cam-feed"
+                        style="background-image: url('https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&q=80&w=200');">
+                    </div>
+                    <div class="alert-info">
+                        <div class="alert-header">
+                            <h4 class="alert-title text-warning">Hazardous Material Suspected</h4>
+                            <span class="badge badge-medium">12 MIN AGO</span>
+                        </div>
+                        <div class="alert-meta">
+                            Cam: WRD-07-A • Ward 7 Sector B
+                        </div>
+                        <p style="font-size: 0.85rem; margin: 0 0 10px; color: var(--muted);">AI detected potential
+                            bio-medical waste bags mixed with general municipal solid waste.</p>
+                        <div class="alert-actions">
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;">Flag for
+                                Inspector</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert 3 -->
+                <div class="alert-card medium">
+                    <div class="cam-feed"
+                        style="background-image: url('https://images.unsplash.com/photo-1594916328320-be1adfbdbd4b?auto=format&fit=crop&q=80&w=200');">
+                    </div>
+                    <div class="alert-info">
+                        <div class="alert-header">
+                            <h4 class="alert-title text-cyan">Repeated Overflow Violation</h4>
+                            <span class="badge badge-low">45 MIN AGO</span>
+                        </div>
+                        <div class="alert-meta">
+                            Cam: MRK-02 • Central Market
+                        </div>
+                        <p style="font-size: 0.85rem; margin: 0 0 10px; color: var(--muted);">Commercial vendors leaving
+                            waste outside designated bins. Pattern matches yesterday.</p>
+                        <div class="alert-actions">
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;">Review
+                                Pattern</button>
+                            <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 0.75rem;">Route
+                                Sweeper</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary mt-4" style="width: 100%;">Load Next 10 Incidents</button>
+        </div>
+
+        <!-- Right Side Modules -->
+        <div>
+            <!-- Stats -->
+            <div class="quick-stats animate-fade-in" style="animation-delay: 0.1s;">
+                <div class="q-stat">
+                    <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase;">Violations (24h)
+                    </div>
+                    <div style="font-size: 1.8rem; font-weight: 700; color: var(--warning); margin-top: 4px;">42</div>
+                </div>
+                <div class="q-stat">
+                    <div style="font-size: 0.75rem; color: var(--muted); text-transform: uppercase;">Fines Issued</div>
+                    <div style="font-size: 1.8rem; font-weight: 700; color: var(--success); margin-top: 4px;">₹ 48.5K
+                    </div>
+                </div>
+            </div>
+
+            <!-- Heat Graph -->
+            <div class="glass-panel mb-4 animate-fade-in" style="animation-delay: 0.2s;">
+                <div class="panel-title" style="font-size: 1rem; margin-bottom: 5px;">Night Activity Risk Graph</div>
+                <div style="font-size: 0.75rem; color: var(--muted);">Illegal dumping frequency from 10 PM to 6 AM</div>
+
+                <div class="heat-graph">
+                    <!-- Javascript will populate bars -->
+                </div>
+                <div class="flex-between text-muted" style="font-size: 0.7rem; margin-top: 4px;">
+                    <span>10 PM</span>
+                    <span>2 AM</span>
+                    <span>6 AM</span>
+                </div>
+            </div>
+
+            <!-- Repeat Offenders -->
+            <div class="glass-panel animate-fade-in" style="animation-delay: 0.3s;">
+                <div class="panel-title" style="font-size: 1rem;">Repeat Offender Tracking</div>
+
+                <div class="suspect-card">
+                    <div class="suspect-avatar">🚛</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">TN59-AB-1234</div>
+                        <div style="font-size: 0.75rem; color: var(--danger);">4 Violations this month</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;">View Logs</button>
+                </div>
+
+                <div class="suspect-card">
+                    <div class="suspect-avatar">🏢</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 600; font-size: 0.9rem;">Royal Builders Site</div>
+                        <div style="font-size: 0.75rem; color: var(--warning);">2 C&D Dumpings</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.7rem;">View Logs</button>
+                </div>
+
+                <button class="btn btn-secondary" style="width: 100%; margin-top: 12px; font-size: 0.8rem;">Generate
+                    Enforcement Report</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/pages/shared/navigation.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Generate random heat graph bars
+            const graph = document.querySelector('.heat-graph');
+            const dataPts = 24;
+
+            for (let i = 0; i < dataPts; i++) {
+                // Generate a curve favoring 1am - 4am
+                let height = 10;
+                if (i > 6 && i < 18) {
+                    height = Math.random() * 60 + 30;
+                } else {
+                    height = Math.random() * 30 + 10;
+                }
+
+                const bar = document.createElement('div');
+                bar.className = 'heat-bar';
+                bar.style.height = `${height}%`;
+                if (height > 70) {
+                    bar.style.background = 'var(--danger)';
+                } else if (height > 40) {
+                    bar.style.background = 'var(--warning)';
+                }
+
+                bar.title = `Activity level: ${Math.round(height)}%`;
+                graph.appendChild(bar);
+            }
+        });
+    </script>
+</body>
+
+</html>

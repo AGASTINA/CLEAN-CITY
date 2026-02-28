@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ward Rewards – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+
+    <style>
+        .top-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+            background: rgba(10, 14, 26, 0.4);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .podium-container {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 20px;
+            height: 280px;
+            margin: 40px 0 60px;
+        }
+
+        .podium-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 140px;
+        }
+
+        .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            font-size: 2.5rem;
+            margin-bottom: -15px;
+            z-index: 2;
+            background: var(--bg-secondary);
+            border: 4px solid var(--bg-card);
+        }
+
+        .podium-base {
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 30px;
+            box-shadow: 0 -10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .podium-item.first .podium-avatar {
+            border-color: #ffd700;
+        }
+
+        .podium-item.first .podium-base {
+            height: 180px;
+            background: linear-gradient(180deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05));
+            border-top: 2px solid #ffd700;
+        }
+
+        .podium-item.second .podium-avatar {
+            border-color: #c0c0c0;
+        }
+
+        .podium-item.second .podium-base {
+            height: 140px;
+            background: linear-gradient(180deg, rgba(192, 192, 192, 0.2), rgba(192, 192, 192, 0.05));
+            border-top: 2px solid #c0c0c0;
+        }
+
+        .podium-item.third .podium-avatar {
+            border-color: #cd7f32;
+        }
+
+        .podium-item.third .podium-base {
+            height: 110px;
+            background: linear-gradient(180deg, rgba(205, 127, 50, 0.2), rgba(205, 127, 50, 0.05));
+            border-top: 2px solid #cd7f32;
+        }
+
+        .podium-rank {
+            font-size: 3rem;
+            font-weight: 800;
+            opacity: 0.3;
+            margin-bottom: auto;
+        }
+
+        .podium-score {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+        }
+
+        .podium-name {
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 0.9rem;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .leaderboard-row {
+            background: var(--bg-card);
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .leaderboard-row:hover {
+            transform: scale(1.01);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .leaderboard-row td {
+            padding: 16px;
+        }
+
+        .leaderboard-row td:first-child {
+            border-radius: 12px 0 0 12px;
+            width: 60px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .leaderboard-row td:last-child {
+            border-radius: 0 12px 12px 0;
+            text-align: right;
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 8px;
+        }
+
+        .achivement {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        @media (max-width: 900px) {
+            .top-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            body {
+                font-size: 0.9rem;
+            }
+
+            .achivement span {
+                display: none;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-stats animate-fade-in">
+        <div style="text-align: center;">
+            <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Participating Wards</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--cyan); margin-top: 4px;">15<span
+                    style="font-size: 1rem; color: var(--muted);">/15</span></div>
+        </div>
+        <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">City Avg Score</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--success); margin-top: 4px;">78.5</div>
+        </div>
+        <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Resolution Rate</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--text); margin-top: 4px;">92%</div>
+        </div>
+        <div style="text-align: center; border-left: 1px solid rgba(255,255,255,0.1);">
+            <div style="color: var(--muted); font-size: 0.85rem; text-transform: uppercase;">Civic Reports</div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--text); margin-top: 4px;">2.1k</div>
+        </div>
+    </div>
+
+    <!-- Podium -->
+    <div class="podium-container animate-fade-in" style="animation-delay: 0.1s;">
+        <!-- Second Place -->
+        <div class="podium-item second">
+            <div class="podium-avatar">🥈</div>
+            <div class="podium-name">Ward 05</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">SS Colony</div>
+            <div class="podium-base">
+                <div class="podium-rank">2</div>
+                <div class="podium-score">92.8</div>
+            </div>
+        </div>
+
+        <!-- First Place -->
+        <div class="podium-item first">
+            <div class="podium-avatar">🏆</div>
+            <div class="podium-name">Ward 12</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">Meenakshi Temple</div>
+            <div class="podium-base">
+                <div class="podium-rank">1</div>
+                <div class="podium-score" style="color: #ffd700;">95.2</div>
+            </div>
+        </div>
+
+        <!-- Third Place -->
+        <div class="podium-item third">
+            <div class="podium-avatar">🥉</div>
+            <div class="podium-name">Ward 19</div>
+            <div style="font-size: 0.75rem; color: var(--muted);">K.K. Nagar</div>
+            <div class="podium-base">
+                <div class="podium-rank">3</div>
+                <div class="podium-score">89.5</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Full -->
+    <div class="glass-panel animate-fade-in" style="animation-delay: 0.2s;">
+        <div class="panel-title">Citywide Cleanliness Index Ranking (Feb 2026)</div>
+        <p style="font-size: 0.8rem; color: var(--muted); margin-bottom: 24px;">Scores are dynamically generated by AI
+            taking into account population density, citizen reporting rates, and resolution speed.</p>
+
+        <table class="leaderboard-table">
+            <thead>
+                <tr>
+                    <th style="padding: 0 16px 8px;">Rank</th>
+                    <th style="padding: 0 16px 8px;">Ward Details</th>
+                    <th style="padding: 0 16px 8px;">Clean Score</th>
+                    <th style="padding: 0 16px 8px;">Achievements</th>
+                    <th style="padding: 0 16px 8px; text-align: right;">Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="leaderboard-row">
+                    <td style="color: #ffd700;">1</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 12 (Meenakshi Temple Zone)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 45,200 • Avg Response: 12m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--success);">95.2</span></td>
+                    <td>
+                        <div class="badge-list">
+                            <span class="achivement" title="Perfect Week">⭐ <span>Perfect Week</span></span>
+                            <span class="achivement" title="Community Leader">👥 <span>Community Lead</span></span>
+                        </div>
+                    </td>
+                    <td><span class="text-success" style="font-weight: 700;">▲ 2.1</span></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: #c0c0c0;">2</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 05 (SS Colony)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 32,800 • Avg Response: 18m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--success);">92.8</span></td>
+                    <td>
+                        <div class="badge-list">
+                            <span class="achivement" title="Fast Response">⚡ <span>Quick Clear</span></span>
+                        </div>
+                    </td>
+                    <td><span class="text-success" style="font-weight: 700;">▲ 0.8</span></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: #cd7f32;">3</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 19 (K.K. Nagar)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 51,000 • Avg Response: 22m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--success);">89.5</span></td>
+                    <td>
+                        <div class="badge-list">
+                            <span class="achivement" title="Waste Segregation Master">♻️ <span>Segregation
+                                    King</span></span>
+                        </div>
+                    </td>
+                    <td><span class="text-muted" style="font-weight: 700;">▬ 0.0</span></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: var(--muted);">4</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 02 (Anna Nagar)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 41,000 • Avg Response: 28m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--success);">88.5</span></td>
+                    <td></td>
+                    <td><span class="text-success" style="font-weight: 700;">▲ 1.4</span></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: var(--muted);">...</td>
+                    <!-- filler row -->
+                    <td>
+                        <div class="text-muted" style="font-style: italic;">Viewing top selections for demo...</div>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: var(--muted);">14</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 07 (Simmakkal Market)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 38,500 • Avg Response: 55m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--warning);">76.8</span></td>
+                    <td></td>
+                    <td><span class="text-danger" style="font-weight: 700;">▼ 3.2</span></td>
+                </tr>
+
+                <tr class="leaderboard-row">
+                    <td style="color: var(--muted);">15</td>
+                    <td>
+                        <div style="font-weight: 600;">Ward 14 (Arapalayam Zone)</div>
+                        <div style="font-size: 0.75rem; color: var(--muted);">Pop: 52,100 • Avg Response: 85m</div>
+                    </td>
+                    <td><span style="font-size: 1.2rem; font-weight: 700; color: var(--danger);">62.4</span></td>
+                    <td></td>
+                    <td><span class="text-danger" style="font-weight: 700;">▼ 5.1</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="/pages/shared/navigation.js"></script>
+</body>
+
+</html>

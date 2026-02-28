@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Intelligence – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+
+    <style>
+        .policy-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 24px;
+        }
+
+        .ward-selector {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        .ai-reasoning {
+            background: rgba(54, 240, 255, 0.05);
+            border-left: 4px solid var(--cyan);
+            border-radius: 4px;
+            padding: 16px;
+            margin: 20px 0;
+        }
+
+        .ai-reasoning ul {
+            margin: 10px 0 0;
+            padding-left: 20px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .ai-reasoning li {
+            margin-bottom: 6px;
+        }
+
+        .action-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .action-item input[type="checkbox"] {
+            margin-top: 4px;
+            accent-color: var(--cyan);
+            width: 16px;
+            height: 16px;
+        }
+
+        .impact-chart {
+            height: 120px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+            margin: 30px 0 10px;
+            display: flex;
+            align-items: flex-end;
+            gap: 40px;
+            padding: 0 40px;
+        }
+
+        .chart-bar {
+            width: 60px;
+            position: relative;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .chart-bar.before {
+            height: 90%;
+            background: rgba(239, 68, 68, 0.6);
+        }
+
+        .chart-bar.after {
+            height: 20%;
+            background: rgba(16, 185, 129, 0.8);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .bar-label {
+            position: absolute;
+            bottom: -25px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .bar-value {
+            position: absolute;
+            top: -25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 900px) {
+            .policy-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="animate-fade-in" style="margin-bottom: 24px;">
+        <p class="text-muted" style="margin: 0;">AI-generated infrastructure recommendations and budget insights based
+            on historical waste patterns.</p>
+    </div>
+
+    <div class="policy-grid animate-fade-in" style="animation-delay: 0.1s;">
+        <!-- Left: Context Panel -->
+        <div>
+            <select class="ward-selector">
+                <option>Ward 14 (Arapalayam Zone)</option>
+                <option>Ward 07 (Simmakkal Market)</option>
+                <option>Ward 02 (Anna Nagar)</option>
+            </select>
+
+            <div class="glass-panel" style="margin-bottom: 24px;">
+                <h3 style="margin: 0 0 16px; font-size: 1rem;">Ward Profile</h3>
+
+                <div class="flex-between mb-4">
+                    <span class="text-muted" style="font-size: 0.85rem;">Population Density</span>
+                    <span style="font-weight: 600;">High (52,100)</span>
+                </div>
+                <div class="flex-between mb-4">
+                    <span class="text-muted" style="font-size: 0.85rem;">Avg Cleanliness Score</span>
+                    <span class="text-danger" style="font-weight: 600;">62.4 (Below Avg)</span>
+                </div>
+                <div class="flex-between mb-4">
+                    <span class="text-muted" style="font-size: 0.85rem;">Reported Incidents (30d)</span>
+                    <span class="text-warning" style="font-weight: 600;">412</span>
+                </div>
+                <div class="flex-between">
+                    <span class="text-muted" style="font-size: 0.85rem;">Repeat Citations</span>
+                    <span style="font-weight: 600;">89</span>
+                </div>
+            </div>
+
+            <div class="glass-panel">
+                <h3 style="margin: 0 0 16px; font-size: 1rem;">Past Recommendations</h3>
+
+                <div
+                    style="font-size: 0.85rem; padding: 10px; border-left: 3px solid var(--success); background: rgba(16, 185, 129, 0.05); margin-bottom: 10px;">
+                    <strong>Installed Smart Bins (Sector 2A)</strong>
+                    <div class="text-muted" style="margin-top: 4px;">Completed 2 months ago. Overflow reduced by 45%.
+                    </div>
+                </div>
+
+                <div
+                    style="font-size: 0.85rem; padding: 10px; border-left: 3px solid var(--warning); background: rgba(245, 158, 11, 0.05);">
+                    <strong>SHG Collection Drive Expansion</strong>
+                    <div class="text-muted" style="margin-top: 4px;">Pending Budget Approval (₹1.2L)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right: AI Advisory Panel -->
+        <div class="glass-panel">
+            <div class="panel-title flex-between">
+                <span>Infrastructure Advisory #AG-104</span>
+                <span class="badge badge-high">HIGH PRIORITY</span>
+            </div>
+
+            <h2 style="font-size: 1.4rem; margin: 0 0 8px;">CCTV & Capacity Upgrade Required (Bus Stand Radius)</h2>
+            <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--muted); margin-bottom: 24px;">
+                <span>💡 Auto-Generated via Gemini AI</span>
+                <span>💰 Est. Budget: ₹2.8L</span>
+                <span>⏱️ Est. Timeline: 3 Weeks</span>
+            </div>
+
+            <div class="ai-reasoning">
+                <strong>🧠 AI Reasoning Engine:</strong>
+                <ul>
+                    <li>Computer vision logs show 58% of illegal dumping occurs between 11 PM and 3 AM near the Bus
+                        Stand periphery.</li>
+                    <li>Current capacity (2 bins) reaches 100% by 2 PM daily, causing secondary dumping.</li>
+                    <li>Route Optimization AI frequently flags this sector as a bottleneck due to scattered waste.</li>
+                </ul>
+            </div>
+
+            <h4 style="margin: 24px 0 12px;">Recommended Action Plan</h4>
+            <div class="action-checklist">
+                <label class="action-item">
+                    <input type="checkbox">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem;">Install 2x Night-Vision CCTV Cameras</div>
+                        <div class="text-muted" style="font-size: 0.8rem; margin-top: 2px;">Focus on North & East exit
+                            lanes. Integrate feeds with Enforcement Grid. (Budget: ₹1.2L)</div>
+                    </div>
+                </label>
+
+                <label class="action-item">
+                    <input type="checkbox">
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.95rem;">Upgrade to Heavy Capacity Compactor Bins
+                        </div>
+                        <div class="text-muted" style="font-size: 0.8rem; margin-top: 2px;">Replace existing 1100L bins
+                            with 2x 2500L closed compactors. (Budget: ₹1.6L)</div>
+                    </div>
+                </label>
+            </div>
+
+            <div style="margin-top: 40px;">
+                <h4 style="margin: 0 0 10px;">Projected Impact (90 Days)</h4>
+
+                <div class="impact-chart">
+                    <div class="chart-bar before">
+                        <span class="bar-value text-danger">412</span>
+                        <span class="bar-label">Current Monthly Violations</span>
+                    </div>
+
+                    <!-- Arrow -->
+                    <div style="margin-bottom: 20px; font-size: 24px; color: var(--cyan);">➔</div>
+
+                    <div class="chart-bar after">
+                        <span class="bar-value text-success">85</span>
+                        <span class="bar-label">Projected Violations (-79%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="display: flex; gap: 16px; margin-top: 40px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <button class="btn btn-primary" style="flex: 1;">Download Official Proposal (PDF)</button>
+                <button class="btn btn-secondary">Forward to Commissioner</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/pages/shared/navigation.js"></script>
+</body>
+
+</html>

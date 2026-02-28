@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Madurai Swachh AI Grid – Predictive Waste Governance & Circular Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <div class="bg">
+    <div class="grid"></div>
+    <canvas id="particles"></canvas>
+    <div class="city-line"></div>
+    <div class="temple-line"></div>
+    <div class="glow-orbs"></div>
+  </div>
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">MS</div>
+      <div>
+        <div class="brand-title">MADURAI SWACHH AI GRID</div>
+        <div class="brand-sub">Predictive Waste Governance & Circular Intelligence</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <a href="/intelligence-dashboard.html">Dashboard</a>
+      <a href="/circular-module.html">Circular Intel</a>
+      <a href="/escalation-module.html">Enforcement</a>
+      <a href="/policy-module.html">Policy</a>
+      <a href="/detection-module.html">AI Prompts</a>
+    </nav>
+    <div class="actions">
+      <button class="primary" onclick="window.location.href='/intelligence-dashboard.html'">Request Demo</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="top">
+      <div class="hero-content">
+        <div class="chip">Smart City + Nature + Tamil Cultural Intelligence</div>
+        <h1>AI Powered Governance for a Cleaner Madurai</h1>
+        <p>
+          Integrating CCTV, Citizen Intelligence & Predictive Analytics to transform waste
+          detection into governance-grade, circular economy intelligence.
+        </p>
+        <div class="cta">
+          <button class="primary" onclick="window.location.href='/intelligence-dashboard.html'">View Live
+            Dashboard</button>
+          <button class="ghost" onclick="window.location.href='/detection-module.html'">Explore AI
+            Intelligence</button>
+        </div>
+        <div class="hero-stats">
+          <div class="stat glass">
+            <div class="stat-value">98.2%</div>
+            <div class="stat-label">Ward Coverage</div>
+          </div>
+          <div class="stat glass">
+            <div class="stat-value">12m</div>
+            <div class="stat-label">Avg. Response Time</div>
+          </div>
+          <div class="stat glass">
+            <div class="stat-value">₹4.3Cr</div>
+            <div class="stat-label">Circular Revenue</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual glass">
+        <div class="map-header">
+          <span>Madurai Live Heatmap</span>
+          <span class="status">Realtime</span>
+        </div>
+        <div id="heroMap" style="height: 400px; border-radius: 12px; overflow: hidden;"></div>
+        <div class="map-footer">
+          <div class="pill">AI Hotspot: 24</div>
+          <div class="pill">Critical Alerts: 6</div>
+          <div class="pill">Overflow Risk: High</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="problem">
+      <div class="section-header">
+        <h2>From Reactive Waste Detection to Predictive Governance</h2>
+        <p>Government-grade intelligence that upgrades civic response into real-time orchestration.</p>
+      </div>
+      <div class="comparison">
+        <div class="card glass">
+          <h3>Detection</h3>
+          <p>Manual reporting, delayed action, low accountability.</p>
+        </div>
+        <div class="card glass">
+          <h3>Prediction</h3>
+          <p>AI forecasts overflow and illegal dumping before escalation.</p>
+        </div>
+        <div class="card glass">
+          <h3>Governance Intelligence</h3>
+          <p>Policy insights, resource optimization, circular revenue planning.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="dashboard">
+      <div class="section-header">
+        <h2>Live AI Dashboard Preview</h2>
+        <p>Unified command view for city leadership, ward officers, and enforcement teams.</p>
+      </div>
+      <div class="dashboard" id="dashboard-wards-container">
+        <!-- Dynamic ward cards loaded here -->
+        <div class="loading-state">
+          <div class="loader"></div>
+          <p>Loading live ward data...</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="intelligence">
+      <div class="section-header">
+        <h2>Circular Intelligence Panel</h2>
+        <p>Turning detected waste into measurable economic and environmental assets.</p>
+      </div>
+      <div class="grid-3" id="circular-economy-cards">
+        <!-- Dynamic circular economy cards loaded here -->
+      </div>
+    </section>
+
+    <section class="section" id="enforcement">
+      <div class="section-header">
+        <h2>Enforcement & CCTV Integration</h2>
+        <p>Automated alerts, illegal dumping detection, and proactive enforcement.</p>
+      </div>
+      <div class="enforcement-grid" id="enforcement-alerts">
+        <!-- Dynamic enforcement alerts loaded here -->
+      </div>
+      <div class="card glass">
+        <h3>Illegal Dumping Timeline</h3>
+        <div class="timeline">
+          <span>02:10 AM</span><span>Medium</span>
+          <span>02:44 AM</span><span>High</span>
+          <span>03:12 AM</span><span>Critical</span>
+        </div>
+      </div>
+      <div class="card glass">
+        <h3>Night Activity Risk Heat Graph</h3>
+        <div class="heat-graph"></div>
+        <button class="ghost small" onclick="window.location.href='/pages/enforcement.html'">Suggested Actions</button>
+      </div>
+      </div>
+    </section>
+
+    <section class="section" id="ward">
+      <div class="section-header">
+        <h2>Ward Reward System</h2>
+        <p>Motivating citizen participation with clean ward rankings and incentives.</p>
+      </div>
+      <div class="leaderboard-section" id="leaderboard-container">
+        <!-- Dynamic leaderboard loaded here -->
+      </div>
+      <div class="grid-2" style="margin-top: 30px;">
+        <div class="card glass">
+          <h3>Citizen Participation Score</h3>
+          <div class="metric">8.9/10</div>
+          <p>2,142 verified community reports</p>
+        </div>
+        <div class="card glass">
+          <h3>Resolution Speed</h3>
+          <div class="speed">14m Avg</div>
+          <div class="trend up">▲ Improved by 22%</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="policy">
+      <div class="section-header">
+        <h2>Policy Intelligence Engine</h2>
+        <p>Auto-generated AI recommendations with downloadable governance reports.</p>
+      </div>
+      <div class="policy-grid" id="policy-recommendations">
+        <!-- Dynamic policy recommendations loaded here -->
+      </div>
+      <div class="pill">Priority: High</div>
+      </div>
+      <div class="card glass">
+        <h3>Monthly Governance Report</h3>
+        <p>Auto-generated, ward-wise insights with budget prioritization.</p>
+        <button class="primary" onclick="window.location.href='/pages/policy-intelligence.html'">Download
+          Report</button>
+      </div>
+      </div>
+    </section>
+
+    <section class="section" id="architecture">
+      <div class="section-header">
+        <h2>Architecture Overview</h2>
+        <p>Clean, scalable, and deployment-ready for Smart Cities India.</p>
+      </div>
+      <div class="architecture glass">
+        <div class="arch-node">Data Sources<br /><span>CCTV • IoT • Citizen Upload</span></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">AI Intelligence Layer<br /><span>Classification • Prediction • Optimization</span></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node">Governance Dashboard<br /><span>Policy • Enforcement • Circular Economy</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="deployment">
+      <div class="section-header">
+        <h2>Government Deployment Ready</h2>
+        <p>Cloud-native, secure, and built for scale with existing infrastructure.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card glass">
+          <h3>Cloud Native</h3>
+          <p>Elastic infrastructure with multi-region resilience.</p>
+        </div>
+        <div class="card glass">
+          <h3>API Integrations</h3>
+          <p>Plug into CCTV, waste trucks, citizen apps, and municipal ERP.</p>
+        </div>
+        <div class="card glass">
+          <h3>Scalable Nationwide</h3>
+          <p>Ready for Smart Cities India & Tier-2/3 expansion.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="prompts">
+      <div class="section-header">
+        <h2>Gemini AI Prompt Library</h2>
+        <p>Operational prompts powering classification, prediction, and policy intelligence.</p>
+      </div>
+      <div class="prompt-grid">
+        <div class="card glass">
+          <h3>Waste Classification Prompt</h3>
+          <pre>
+You are an urban waste analysis AI system deployed for Madurai Municipal Corporation.
+Analyze the uploaded image and provide:
+1. Waste Type (plastic / organic / mixed / construction / medical / e-waste)
+2. Severity Score (1-5)
+3. Estimated Volume (Low / Medium / High)
+4. Risk Level (Low / Moderate / High / Critical)
+5. Is this likely illegal dumping? (Yes/No)
+6. Environmental Hazard Level
+7. Short Explanation
+Provide structured JSON output.
+          </pre>
+        </div>
+        <div class="card glass">
+          <h3>Overflow Prediction Prompt</h3>
+          <pre>
+You are a predictive waste intelligence AI.
+Given the following reports for Ward X:
+- Number of reports
+- Severity trend
+- Time frequency
+- Past 7-day data
+Predict:
+1. Probability of overflow (percentage)
+2. Estimated time to overflow
+3. Urgency level
+4. Recommended immediate action
+5. Long-term preventive strategy
+Respond in structured decision format.
+          </pre>
+        </div>
+        <div class="card glass">
+          <h3>Route Optimization Advisory Prompt</h3>
+          <pre>
+You are a municipal route planning AI.
+Based on the following hotspot coordinates and severity levels, suggest:
+1. Optimal cleaning route order
+2. Truck allocation recommendation
+3. Estimated fuel/time savings
+4. Workforce distribution suggestion
+Provide concise operational guidance.
+          </pre>
+        </div>
+        <div class="card glass">
+          <h3>Circular Economy Advisory Prompt</h3>
+          <pre>
+You are a circular economy intelligence AI for Madurai.
+For detected waste type: [insert type]
+Provide:
+1. Recycling method
+2. Local processing recommendation (MCC, recycler, contractor)
+3. Revenue potential per kg
+4. Environmental impact reduction
+5. Employment generation opportunity (SHG / local units)
+6. Feasibility score (1-10)
+Format clearly.
+          </pre>
+        </div>
+        <div class="card glass">
+          <h3>Policy Suggestion Engine Prompt</h3>
+          <pre>
+You are an AI policy advisor for Madurai Corporation.
+Based on repeated waste incidents at [location], suggest:
+1. Root cause analysis
+2. Infrastructure recommendation (bins, CCTV, lighting)
+3. Awareness strategy
+4. Enforcement action
+5. Budget priority level
+Respond in government advisory tone.
+          </pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div>
+      <strong>Powered by Gemini AI</strong> • Firebase Realtime Data • Google Cloud Infrastructure
+    </div>
+    <div>Built for Smart Urban Governance</div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="enhanced-app.js"></script>
+  <script>
+    // Initialize hero map
+    document.addEventListener('DOMContentLoaded', function () {
+      const heroMap = L.map('heroMap', {
+        zoomControl: false,
+        attributionControl: false
+      }).setView([9.9252, 78.1198], 13);
+
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        maxZoom: 19
+      }).addTo(heroMap);
+
+      // Add hotspot markers
+      const hotspots = [
+        { lat: 9.9252, lng: 78.1198, intensity: 'high' },
+        { lat: 9.9180, lng: 78.1290, intensity: 'medium' },
+        { lat: 9.9350, lng: 78.1150, intensity: 'high' },
+        { lat: 9.9280, lng: 78.1320, intensity: 'low' },
+        { lat: 9.9150, lng: 78.1100, intensity: 'medium' }
+      ];
+
+      hotspots.forEach(spot => {
+        const color = spot.intensity === 'high' ? '#ef4444' :
+          spot.intensity === 'medium' ? '#f59e0b' : '#10b981';
+
+        L.circleMarker([spot.lat, spot.lng], {
+          radius: 12,
+          fillColor: color,
+          color: color,
+          weight: 2,
+          opacity: 0.8,
+          fillOpacity: 0.4
+        }).addTo(heroMap);
+      });
+    });
+  </script>
+</body>
+
+</html>

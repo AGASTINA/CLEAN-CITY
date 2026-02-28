@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Route Optimization – Madurai Swachh AI Grid</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/pages/shared/theme.css">
+
+    <style>
+        .route-grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+            height: calc(100vh - 140px);
+        }
+
+        .config-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+
+        .map-wrapper {
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.4);
+            position: relative;
+            height: 100%;
+        }
+
+        .truck-select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+        }
+
+        .truck-select:focus {
+            border-color: var(--cyan);
+        }
+
+        .hotspot-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .hotspot-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hotspot-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .hotspot-item.selected {
+            border-color: var(--cyan);
+            background: rgba(54, 240, 255, 0.05);
+        }
+
+        .hotspot-checkbox {
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            border: 2px solid var(--muted);
+            display: grid;
+            place-items: center;
+        }
+
+        .hotspot-item.selected .hotspot-checkbox {
+            background: var(--cyan);
+            border-color: var(--cyan);
+        }
+
+        .hotspot-item.selected .hotspot-checkbox::after {
+            content: '✓';
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .hotspot-details h4 {
+            margin: 0 0 4px 0;
+            font-size: 0.9rem;
+        }
+
+        .hotspot-details p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .savings-panel {
+            display: none;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(54, 240, 255, 0.1));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        .savings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .saving-metric {
+            text-align: center;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .saving-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--success);
+        }
+
+        .saving-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 4px;
+        }
+
+        .route-step {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            position: relative;
+        }
+
+        .route-step::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 24px;
+            bottom: -16px;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+
+        .route-step:last-child::before {
+            display: none;
+        }
+
+        .step-number {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--cyan);
+            color: #000;
+            display: grid;
+            place-items: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        @media (max-width: 900px) {
+            .route-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .map-wrapper {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="route-grid animate-fade-in">
+        <!-- Configuration Panel -->
+        <div class="glass-panel config-panel">
+            <h2 style="font-size: 1.2rem; margin: 0 0 16px;">AI Routing Controller</h2>
+
+            <div>
+                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Select Fleet
+                    Vehicle</label>
+                <select class="truck-select">
+                    <option>TR-04 (Heavy Compactor - Zone A)</option>
+                    <option>TR-09 (Light Tipper - Zone B)</option>
+                    <option>TR-12 (Bio-Waste Carrier)</option>
+                    <option>TR-18 (Heavy Compactor - Zone C)</option>
+                </select>
+            </div>
+
+            <div style="margin-top: 16px;">
+                <label style="font-size: 0.8rem; color: var(--muted); margin-bottom: 8px; display: block;">Select
+                    Hotspots for Route (3/6)</label>
+                <div class="hotspot-list">
+                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
+                        <div class="hotspot-checkbox"></div>
+                        <div class="hotspot-details">
+                            <h4>Simmakkal Market <span class="badge badge-high"
+                                    style="font-size: 0.55rem; margin-left: 4px;">CRITICAL</span></h4>
+                            <p>Organic overload • Est: 1.2T</p>
+                        </div>
+                    </div>
+                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
+                        <div class="hotspot-checkbox"></div>
+                        <div class="hotspot-details">
+                            <h4>Arapalayam Bus Stand</h4>
+                            <p>Mixed plastic • Est: 450kg</p>
+                        </div>
+                    </div>
+                    <div class="hotspot-item selected" onclick="this.classList.toggle('selected')">
+                        <div class="hotspot-checkbox"></div>
+                        <div class="hotspot-details">
+                            <h4>Ellis Nagar Housing</h4>
+                            <p>Overflow risk • Est: 600kg</p>
+                        </div>
+                    </div>
+                    <div class="hotspot-item" onclick="this.classList.toggle('selected')">
+                        <div class="hotspot-checkbox"></div>
+                        <div class="hotspot-details">
+                            <h4>Kalavasal Junction</h4>
+                            <p>C&D Dump • Est: 2.5T</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" style="margin-top: 24px; padding: 14px;" onclick="calculateRoute()">
+                🚀 Calculate Optimal Pathway
+            </button>
+
+            <!-- Savings Results -->
+            <div class="savings-panel" id="savingsPanel">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2rem;">✨</span>
+                    <h3 style="margin: 0; font-size: 1rem; color: var(--success);">Route Calculated</h3>
+                </div>
+
+                <div class="savings-grid">
+                    <div class="saving-metric">
+                        <div class="saving-value">28%</div>
+                        <div class="saving-label">Distance Saved</div>
+                    </div>
+                    <div class="saving-metric">
+                        <div class="saving-value">4.2L</div>
+                        <div class="saving-label">Fuel Saved</div>
+                    </div>
+                    <div class="saving-metric">
+                        <div class="saving-value">45m</div>
+                        <div class="saving-label">Time Saved</div>
+                    </div>
+                    <div class="saving-metric">
+                        <div class="saving-value" style="color: var(--cyan);">₹380</div>
+                        <div class="saving-label">Cost Reduction</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <h4 style="font-size: 0.85rem; color: var(--muted); margin: 0 0 12px 0; text-transform: uppercase;">
+                        Generated Sequence</h4>
+
+                    <div class="route-step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <div style="font-size: 0.9rem; font-weight: 600;">Depot (Start)</div>
+                        </div>
+                    </div>
+                    <div class="route-step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <div style="font-size: 0.9rem; font-weight: 600;">Arapalayam Bus Stand</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">2.1 km • 8 mins</div>
+                        </div>
+                    </div>
+                    <div class="route-step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <div style="font-size: 0.9rem; font-weight: 600;">Ellis Nagar Housing</div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">1.8 km • 6 mins</div>
+                        </div>
+                    </div>
+                    <div class="route-step">
+                        <div class="step-number" style="background: var(--danger);">4</div>
+                        <div>
+                            <div style="font-size: 0.9rem; font-weight: 600; color: var(--danger);">Simmakkal Market
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--muted);">3.4 km • 14 mins</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-success" style="width: 100%; margin-top: 24px;">Send Path to Driver
+                        App</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Map Area -->
+        <div class="map-wrapper" id="routeMap"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/pages/shared/navigation.js"></script>
+    <script>
+        let routeMap;
+        let routeLayer;
+        let markersGroup;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                routeMap = L.map('routeMap', {
+                    zoomControl: false,
+                    attributionControl: false
+                }).setView([9.9252, 78.1198], 14);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    maxZoom: 19
+                }).addTo(routeMap);
+
+                markersGroup = L.layerGroup().addTo(routeMap);
+                routeLayer = L.layerGroup().addTo(routeMap);
+
+                // Add points
+                addMarkers();
+            }, 300);
+        });
+
+        function addMarkers() {
+            markersGroup.clearLayers();
+
+            const points = [
+                { lat: 9.9212, lng: 78.1108, name: "Depot", type: "start" },
+                { lat: 9.9302, lng: 78.1158, name: "Arapalayam", type: "point" },
+                { lat: 9.9380, lng: 78.1250, name: "Ellis Nagar", type: "point" },
+                { lat: 9.9200, lng: 78.1350, name: "Simmakkal", type: "critical" }
+            ];
+
+            points.forEach((p, i) => {
+                const color = p.type === 'start' ? '#3b82f6' :
+                    p.type === 'critical' ? '#ef4444' : '#f59e0b';
+
+                L.circleMarker([p.lat, p.lng], {
+                    radius: p.type === 'start' ? 12 : 8,
+                    fillColor: color,
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).bindTooltip(p.name, { permanent: true, direction: 'right', offset: [10, 0], className: 'map-tooltip' }).addTo(markersGroup);
+            });
+
+            // Add custom style for tooltips
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .map-tooltip {
+                    background: rgba(10, 14, 26, 0.8);
+                    border: 1px solid rgba(255, 255, 255, 0.2);
+                    color: white;
+                    border-radius: 4px;
+                    font-size: 0.8rem;
+                }
+                .leaflet-tooltip-left::before { border-left-color: rgba(10, 14, 26, 0.8); }
+                .leaflet-tooltip-right::before { border-right-color: rgba(10, 14, 26, 0.8); }
+            `;
+            document.head.appendChild(style);
+        }
+
+        function calculateRoute() {
+            // Show savings panel
+            document.getElementById('savingsPanel').style.display = 'block';
+
+            // Draw route on map
+            routeLayer.clearLayers();
+
+            const routePoints = [
+                [9.9212, 78.1108], // Depot
+                [9.9262, 78.1128],
+                [9.9302, 78.1158], // Arapalayam
+                [9.9350, 78.1200],
+                [9.9380, 78.1250], // Ellis Nagar
+                [9.9300, 78.1300],
+                [9.9200, 78.1350]  // Simmakkal
+            ];
+
+            // Draw line
+            L.polyline(routePoints, {
+                color: '#36f0ff',
+                weight: 4,
+                opacity: 0.8,
+                dashArray: '10, 10',
+                lineJoin: 'round'
+            }).addTo(routeLayer);
+
+            // Animate truck
+            let truckIcon = L.divIcon({
+                html: '<div style="font-size: 24px; filter: drop-shadow(0 0 5px rgba(54, 240, 255, 0.8));">🚛</div>',
+                iconSize: [30, 30],
+                className: 'truck-marker'
+            });
+
+            let truckMarker = L.marker(routePoints[0], { icon: truckIcon }).addTo(routeLayer);
+
+            // Simple animation
+            let step = 0;
+            const animate = setInterval(() => {
+                step++;
+                if (step >= routePoints.length) {
+                    clearInterval(animate);
+                    return;
+                }
+                truckMarker.setLatLng(routePoints[step]);
+            }, 1000);
+
+            routeMap.fitBounds(L.polyline(routePoints).getBounds(), { padding: [50, 50] });
+        }
+    </script>
+</body>
+
+</html>

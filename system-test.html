@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>System Test</title>
+  <style>
+    body { font-family: Arial; background: #0a1f44; color: #fff; padding: 20px; }
+    .test { padding: 15px; margin: 10px 0; border-left: 3px solid #36f0ff; background: rgba(54,240,255,0.1); }
+    .pass { border-left-color: #1e8e3e; background: rgba(30,142,62,0.1); }
+    .fail { border-left-color: #ff4d4d; background: rgba(255,77,77,0.1); }
+    h1 { color: #36f0ff; text-align: center; }
+    .status { font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>🔧 System Integration Test</h1>
+  
+  <div id="tests"></div>
+
+  <script>
+    async function runTests() {
+      const tests = document.getElementById('tests');
+      const results = [];
+
+      async function test(name, fn) {
+        try {
+          await fn();
+          results.push({ name, status: 'pass', msg: 'OK' });
+          console.log(`✅ ${name}`);
+        } catch (err) {
+          results.push({ name, status: 'fail', msg: err.message });
+          console.log(`❌ ${name}: ${err.message}`);
+        }
+      }
+
+      // Test 1: Backend health
+      await test('Backend Health Check', async () => {
+        const res = await fetch('http://localhost:5000/health');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.status !== 'healthy') throw new Error('Backend not healthy');
+      });
+
+      // Test 2: Dashboard API
+      await test('Dashboard API', async () => {
+        const res = await fetch('http://localhost:5000/api/intelligence/dashboard');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.success || !data.data) throw new Error('Invalid response format');
+        if (!data.data.alerts || !data.data.predictions) throw new Error('Missing data fields');
+      });
+
+      // Test 3: Prediction API
+      await test('Prediction API (Ward 1)', async () => {
+        const res = await fetch('http://localhost:5000/api/intelligence/predict/1');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.data.wardId || !data.data.overflowProbability) throw new Error('Missing prediction fields');
+      });
+
+      // Test 4: Alerts API
+      await test('Alerts API', async () => {
+        const res = await fetch('http://localhost:5000/api/intelligence/alerts');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.success) throw new Error('Invalid response');
+      });
+
+      // Test 5: Wards API
+      await test('Wards API', async () => {
+        const res = await fetch('http://localhost:5000/api/wards');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.data || !Array.isArray(data.data)) throw new Error('Invalid wards data');
+      });
+
+      // Test 6: Trucks API
+      await test('Trucks API', async () => {
+        const res = await fetch('http://localhost:5000/api/trucks');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (!data.data || !Array.isArray(data.data)) throw new Error('Invalid trucks data');
+      });
+
+      // Test 7: Dashboard HTML loads
+      await test('Dashboard HTML Page', async () => {
+        const res = await fetch('./intelligence-dashboard.html');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const html = await res.text();
+        if (!html.includes('intelligence.js')) throw new Error('intelligence.js not referenced');
+      });
+
+      // Test 8: Detection Module loads
+      await test('Detection Module HTML', async () => {
+        const res = await fetch('./detection-module.html');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      });
+
+      // Test 9: Prediction Module loads
+      await test('Prediction Module HTML', async () => {
+        const res = await fetch('./prediction-module.html');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      });
+
+      // Test 10: intelligence.js loads
+      await test('Intelligence Engine Library', async () => {
+        const res = await fetch('./intelligence.js');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const js = await res.text();
+        if (!js.includes('IntelligenceEngine')) throw new Error('IntelligenceEngine class not found');
+      });
+
+      // Render results
+      tests.innerHTML = results.map(r => `
+        <div class="test ${r.status}">
+          <span class="status">${r.status === 'pass' ? '✅ PASS' : '❌ FAIL'}</span>: ${r.name}
+          ${r.msg !== 'OK' ? `<br><small>${r.msg}</small>` : ''}
+        </div>
+      `).join('');
+
+      const passed = results.filter(r => r.status === 'pass').length;
+      const total = results.length;
+      
+      const summary = document.createElement('div');
+      summary.style.cssText = 'padding: 20px; margin-top: 20px; background: rgba(54,240,255,0.1); border-radius: 8px; text-align: center;';
+      summary.innerHTML = `
+        <h2>${passed}/${total} Tests Passed</h2>
+        ${passed === total ? '<p style="color: #1e8e3e; font-size: 1.2em;">🎉 All systems operational!</p>' : '<p style="color: #ff4d4d;">⚠️ Some tests failed</p>'}
+      `;
+      tests.appendChild(summary);
+    }
+
+    runTests();
+  </script>
+</body>
+</html>

@@ -379,8 +379,8 @@
     async function fetchAlertsAndTrucks() {
       try {
         const [alertsResp, trucksResp] = await Promise.all([
-          fetch('http://localhost:5000/api/intelligence/alerts'),
-          fetch('http://localhost:5000/api/trucks')
+          fetch('http://localhost:3000/api/intelligence/alerts'),
+          fetch('http://localhost:3000/api/trucks')
         ]);
         if (!alertsResp.ok || !trucksResp.ok) throw new Error('API error');
         const alertsData = await alertsResp.json();

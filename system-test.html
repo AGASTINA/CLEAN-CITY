@@ -34,7 +34,7 @@
 
       // Test 1: Backend health
       await test('Backend Health Check', async () => {
-        const res = await fetch('http://localhost:5000/health');
+        const res = await fetch('http://localhost:3000/health');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (data.status !== 'healthy') throw new Error('Backend not healthy');
@@ -42,7 +42,7 @@
 
       // Test 2: Dashboard API
       await test('Dashboard API', async () => {
-        const res = await fetch('http://localhost:5000/api/intelligence/dashboard');
+        const res = await fetch('http://localhost:3000/api/intelligence/dashboard');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.success || !data.data) throw new Error('Invalid response format');
@@ -51,7 +51,7 @@
 
       // Test 3: Prediction API
       await test('Prediction API (Ward 1)', async () => {
-        const res = await fetch('http://localhost:5000/api/intelligence/predict/1');
+        const res = await fetch('http://localhost:3000/api/intelligence/predict/1');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.data.wardId || !data.data.overflowProbability) throw new Error('Missing prediction fields');
@@ -59,7 +59,7 @@
 
       // Test 4: Alerts API
       await test('Alerts API', async () => {
-        const res = await fetch('http://localhost:5000/api/intelligence/alerts');
+        const res = await fetch('http://localhost:3000/api/intelligence/alerts');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.success) throw new Error('Invalid response');
@@ -67,7 +67,7 @@
 
       // Test 5: Wards API
       await test('Wards API', async () => {
-        const res = await fetch('http://localhost:5000/api/wards');
+        const res = await fetch('http://localhost:3000/api/wards');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.data || !Array.isArray(data.data)) throw new Error('Invalid wards data');
@@ -75,7 +75,7 @@
 
       // Test 6: Trucks API
       await test('Trucks API', async () => {
-        const res = await fetch('http://localhost:5000/api/trucks');
+        const res = await fetch('http://localhost:3000/api/trucks');
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
         if (!data.data || !Array.isArray(data.data)) throw new Error('Invalid trucks data');

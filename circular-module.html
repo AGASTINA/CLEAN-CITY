@@ -439,7 +439,7 @@
     // Fetch circular economy data from API
     async function fetchCircularData() {
       try {
-        const response = await fetch('http://localhost:5000/api/intelligence/circular');
+        const response = await fetch('http://localhost:3000/api/intelligence/circular');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         return result.data;

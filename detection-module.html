@@ -269,7 +269,7 @@
     // Fetch detection data from API
     async function fetchDetectionData() {
       try {
-        const response = await fetch('http://localhost:5000/api/intelligence/detection');
+        const response = await fetch('http://localhost:3000/api/intelligence/detection');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         return result.data;

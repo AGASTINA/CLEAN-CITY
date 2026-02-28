@@ -84,7 +84,6 @@ app.get('/health', (req, res) => {
 });
 
 // Security middleware for static files
-const path = require('path');
 app.use((req, res, next) => {
   const normalizedPath = req.path.toLowerCase();
   if (

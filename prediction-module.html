@@ -360,8 +360,8 @@
     async function fetchPredictions() {
       try {
         const [preds, wardsResp] = await Promise.all([
-          fetch('http://localhost:5000/api/intelligence/predictions'),
-          fetch('http://localhost:5000/api/wards')
+          fetch('http://localhost:3000/api/intelligence/predictions'),
+          fetch('http://localhost:3000/api/wards')
         ]);
         if (!preds.ok || !wardsResp.ok) throw new Error('API error');
         const predsData = await preds.json();

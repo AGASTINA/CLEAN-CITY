@@ -120,14 +120,23 @@ async function loadWardsData() {
     console.error('Error loading wards, using demo data:', error);
   }
   
-  // Fallback to demo data
+  // Fallback to comprehensive Madurai demo data
   wardsData = [
-    { wardNumber: 1, name: 'Anna Nagar', population: 45000, totalReports: 12, resolvedReports: 10, cleanlinessIndex: 87.5, area: 3.2, coordinates: [9.93, 78.12] },
-    { wardNumber: 2, name: 'Meenakshi Nagar', population: 38000, totalReports: 8, resolvedReports: 7, cleanlinessIndex: 82.3, area: 2.8, coordinates: [9.92, 78.13] },
-    { wardNumber: 3, name: 'Tallakulam', population: 52000, totalReports: 15, resolvedReports: 12, cleanlinessIndex: 78.9, area: 4.1, coordinates: [9.91, 78.11] },
-    { wardNumber: 4, name: 'Goripalayam', population: 41000, totalReports: 5, resolvedReports: 5, cleanlinessIndex: 91.2, area: 2.5, coordinates: [9.94, 78.14] },
-    { wardNumber: 5, name: 'Sellur', population: 48000, totalReports: 10, resolvedReports: 8, cleanlinessIndex: 85.6, area: 3.5, coordinates: [9.90, 78.12] },
-    { wardNumber: 6, name: 'Pasumalai', population: 35000, totalReports: 7, resolvedReports: 6, cleanlinessIndex: 88.4, area: 2.9, coordinates: [9.95, 78.10] }
+    { wardNumber: 1, name: 'SS Colony', zone: 'Central', population: 12500, totalReports: 45, resolvedReports: 38, cleanlinessIndex: 87.5, area: 2.4, coordinates: [9.9252, 78.1198] },
+    { wardNumber: 2, name: 'Anna Nagar', zone: 'Central', population: 15800, totalReports: 52, resolvedReports: 45, cleanlinessIndex: 84.3, area: 3.1, coordinates: [9.9300, 78.1280] },
+    { wardNumber: 3, name: 'Meenakshi Amman Temple Area', zone: 'Central', population: 22000, totalReports: 68, resolvedReports: 55, cleanlinessIndex: 78.9, area: 1.8, coordinates: [9.9195, 78.1190] },
+    { wardNumber: 4, name: 'Goripalayam', zone: 'Central', population: 18200, totalReports: 58, resolvedReports: 50, cleanlinessIndex: 81.2, area: 2.9, coordinates: [9.9230, 78.1120] },
+    { wardNumber: 5, name: 'Alagar Kovil Road', zone: 'East', population: 14500, totalReports: 42, resolvedReports: 36, cleanlinessIndex: 85.6, area: 4.2, coordinates: [9.9180, 78.1380] },
+    { wardNumber: 6, name: 'K.Pudur', zone: 'North', population: 16200, totalReports: 48, resolvedReports: 41, cleanlinessIndex: 83.4, area: 3.8, coordinates: [9.9520, 78.1150] },
+    { wardNumber: 7, name: 'Koodal Nagar', zone: 'North', population: 13800, totalReports: 38, resolvedReports: 33, cleanlinessIndex: 86.8, area: 2.7, coordinates: [9.9480, 78.1200] },
+    { wardNumber: 8, name: 'Ellis Nagar', zone: 'North', population: 17500, totalReports: 55, resolvedReports: 47, cleanlinessIndex: 82.1, area: 3.2, coordinates: [9.9450, 78.1350] },
+    { wardNumber: 9, name: 'Simmakkal', zone: 'North', population: 19800, totalReports: 64, resolvedReports: 52, cleanlinessIndex: 79.5, area: 2.1, coordinates: [9.9210, 78.1170] },
+    { wardNumber: 10, name: 'Town Hall', zone: 'North', population: 21000, totalReports: 72, resolvedReports: 60, cleanlinessIndex: 77.8, area: 1.9, coordinates: [9.9240, 78.1190] },
+    { wardNumber: 11, name: 'Villapuram', zone: 'South', population: 14800, totalReports: 44, resolvedReports: 38, cleanlinessIndex: 84.9, area: 4.5, coordinates: [9.8950, 78.1100] },
+    { wardNumber: 12, name: 'Thirunagar', zone: 'South', population: 18900, totalReports: 62, resolvedReports: 51, cleanlinessIndex: 80.3, area: 5.2, coordinates: [9.8920, 78.1320] },
+    { wardNumber: 13, name: 'Avaniyapuram', zone: 'South', population: 16500, totalReports: 50, resolvedReports: 42, cleanlinessIndex: 83.7, area: 6.8, coordinates: [9.8650, 78.1180] },
+    { wardNumber: 14, name: 'Pasumalai', zone: 'South', population: 11200, totalReports: 32, resolvedReports: 28, cleanlinessIndex: 88.4, area: 7.2, coordinates: [9.9080, 78.0950] },
+    { wardNumber: 15, name: 'Sellur', zone: 'South', population: 15600, totalReports: 48, resolvedReports: 40, cleanlinessIndex: 84.2, area: 4.8, coordinates: [9.9000, 78.1450] }
   ];
   updateHeroStats();
   updateDashboardWards();

@@ -415,7 +415,7 @@
     // Fetch data from backend API
     async function fetchIntelligenceData() {
       try {
-        const response = await fetch('http://localhost:5000/api/intelligence/dashboard');
+        const response = await fetch('http://localhost:3000/api/intelligence/dashboard');
         if (!response.ok) throw new Error('API failed');
         const result = await response.json();
         return result.data;

@@ -392,7 +392,7 @@
     // Fetch trucks from API
     async function fetchTrucks() {
       try {
-        const response = await fetch('http://localhost:5000/api/trucks');
+        const response = await fetch('http://localhost:3000/api/trucks');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         return result.data;

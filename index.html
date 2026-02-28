@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MadurAI Urban Intelligence Grid (MUIG)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 30px 20px;
+      overflow-y: auto;
+      position: fixed;
+      height: 100vh;
+      left: 0;
+      top: 0;
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sidebar-logo {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #36f0ff, #1e8e3e);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+      color: #0a0e27;
+    }
+
+    .sidebar-title {
+      flex: 1;
+    }
+
+    .sidebar-title h2 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .sidebar-title p {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      line-height: 1.2;
+    }
+
+    .nav-section {
+      margin-bottom: 30px;
+    }
+
+    .nav-label {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.4);
+      font-weight: 600;
+      margin-bottom: 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 8px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 15px;
+      color: rgba(255, 255, 255, 0.7);
+      text-decoration: none;
+      border-radius: 8px;
+      transition: all 0.3s;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      background: rgba(54, 240, 255, 0.1);
+      color: #36f0ff;
+    }
+
+    .nav-link.active {
+      background: rgba(54, 240, 255, 0.2);
+      color: #36f0ff;
+      font-weight: 600;
+    }
+
+    .nav-icon {
+      font-size: 18px;
+      width: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .main-content {
+      flex: 1;
+      margin-left: 280px;
+      padding: 30px;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    .page {
+      display: none;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .top-header {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 20px 30px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title h1 {
+      font-size: 28px;
+      margin-bottom: 5px;
+      background: linear-gradient(135deg, #36f0ff, #1e8e3e);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-title p {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 30px;
+    }
+
+    .stat {
+      text-align: right;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: #36f0ff;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 25px;
+    }
+
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #36f0ff;
+    }
+
+    #map {
+      height: 400px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 70px;
+        padding: 20px 10px;
+      }
+
+      .sidebar-title p {
+        display: none;
+      }
+
+      .nav-label {
+        display: none;
+      }
+
+      .main-content {
+        margin-left: 70px;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="sidebar-logo">🏛️</div>
+        <div class="sidebar-title">
+          <h2>MUIG</h2>
+          <p>Urban Intelligence</p>
+        </div>
+      </div>
+
+      <!-- Main Navigation -->
+      <nav class="nav-section">
+        <div class="nav-label">Dashboard</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a class="nav-link active" data-page="overview" onclick="showPage('overview')">
+              <span class="nav-icon">📊</span>
+              <span>Overview</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="demo" onclick="showPage('demo')">
+              <span class="nav-icon">🤖</span>
+              <span>AI Classification</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="map" onclick="showPage('map')">
+              <span class="nav-icon">🗺️</span>
+              <span>Ward Map</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="wards" onclick="showPage('wards')">
+              <span class="nav-icon">📍</span>
+              <span>Wards</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="reports" onclick="showPage('reports')">
+              <span class="nav-icon">📋</span>
+              <span>Reports</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <nav class="nav-section">
+        <div class="nav-label">Intelligence</div>
+        <ul class="nav-menu">
+          <li class="nav-item">
+            <a class="nav-link" data-page="analytics" onclick="showPage('analytics')">
+              <span class="nav-icon">📈</span>
+              <span>Analytics</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="policy" onclick="showPage('policy')">
+              <span class="nav-icon">📜</span>
+              <span>Policy</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-page="circular" onclick="showPage('circular')">
+              <span class="nav-icon">♻️</span>
+              <span>Circular Economy</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content scrollbar-hide">
+      <!-- Overview Page -->
+      <div id="overview" class="page active">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>🏛️ Welcome to MUIG</h1>
+            <p>MadurAI Urban Intelligence Grid - Predictive Waste Governance Platform</p>
+          </div>
+          <div class="header-stats">
+            <div class="stat">
+              <div class="stat-value" id="totalWards">-</div>
+              <div class="stat-label">Wards</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="totalReports">-</div>
+              <div class="stat-label">Reports</div>
+            </div>
+            <div class="stat">
+              <div class="stat-value" id="avgResponse">-</div>
+              <div class="stat-label">Avg Response</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="card">
+            <h2>🤖 Quick Actions</h2>
+            <p style="color: rgba(255,255,255,0.6); margin-bottom: 20px;">Jump to key features</p>
+            <div style="display: grid; gap: 10px;">
+              <button style="padding: 12px; background: rgba(54, 240, 255, 0.2); border: 1px solid rgba(54, 240, 255, 0.3); color: #36f0ff; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="showPage('demo')">
+                Classify Waste Image
+              </button>
+              <button style="padding: 12px; background: rgba(30, 142, 62, 0.2); border: 1px solid rgba(30, 142, 62, 0.3); color: #1e8e3e; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="showPage('map')">
+                View Ward Map
+              </button>
+              <button style="padding: 12px; background: rgba(255, 193, 7, 0.2); border: 1px solid rgba(255, 193, 7, 0.3); color: #ffc107; border-radius: 8px; cursor: pointer; font-weight: 600;" onclick="showPage('reports')">
+                View Reports
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <h2>📊 System Status</h2>
+            <div style="display: grid; gap: 15px;">
+              <div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Firebase Connection</div>
+                <div style="color: #1e8e3e; font-weight: 600;">✅ Connected</div>
+              </div>
+              <div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Gemini AI</div>
+                <div style="color: #36f0ff; font-weight: 600;">✅ Ready</div>
+              </div>
+              <div style="padding: 12px; background: rgba(255,255,255,0.03); border-radius: 8px;">
+                <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Socket.IO</div>
+                <div style="color: #1e8e3e; font-weight: 600;">✅ Active</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Demo Page -->
+      <div id="demo" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>🤖 AI Waste Classification</h1>
+            <p>Upload an image to classify waste using Google Gemini AI</p>
+          </div>
+        </div>
+        <div class="card">
+          <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-bottom: 15px;">
+            Upload a waste image to see AI-powered classification
+          </p>
+          
+          <div style="border: 2px dashed rgba(54, 240, 255, 0.3); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s;" id="uploadZone">
+            <div id="uploadPrompt">
+              <svg width="48" height="48" style="margin-bottom: 10px; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+              </svg>
+              <p>Click or drag waste image here</p>
+              <p style="font-size: 12px; opacity: 0.5; margin-top: 5px;">Supported: JPG, PNG</p>
+            </div>
+            <img id="previewImage" style="max-width: 100%; max-height: 300px; border-radius: 8px; margin: 15px 0; display: none;" />
+            <input type="file" id="fileInput" accept="image/*" style="display: none;" />
+          </div>
+
+          <button id="classifyBtn" style="width: 100%; margin-top: 15px; padding: 12px; background: linear-gradient(135deg, #36f0ff, #1e8e3e); color: #fff; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;" disabled>
+            Analyze with Gemini AI
+          </button>
+
+          <div id="classificationResult" style="display: none;"></div>
+        </div>
+      </div>
+
+      <!-- Map Page -->
+      <div id="map" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>🗺️ Ward Map</h1>
+            <p>Interactive map showing wards with real-time data</p>
+          </div>
+        </div>
+        <div class="card">
+          <div id="mapContainer" style="height: 600px; border-radius: 12px; overflow: hidden;"></div>
+        </div>
+      </div>
+
+      <!-- Wards Page -->
+      <div id="wards" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>📍 Ward Overview</h1>
+            <p>All wards in Madurai with statistics</p>
+          </div>
+        </div>
+        <div class="card">
+          <div id="wardList" style="max-height: 500px; overflow-y: auto;"></div>
+        </div>
+      </div>
+
+      <!-- Reports Page -->
+      <div id="reports" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>📋 Recent Reports</h1>
+            <p>All waste reports and incidents</p>
+          </div>
+        </div>
+        <div class="card">
+          <div id="reportsGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; max-height: 500px; overflow-y: auto;"></div>
+        </div>
+      </div>
+
+      <!-- Analytics Page -->
+      <div id="analytics" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>📈 Analytics</h1>
+            <p>System analytics and insights</p>
+          </div>
+        </div>
+        <div class="card">
+          <p style="color: rgba(255,255,255,0.6);">Analytics data will be displayed here</p>
+        </div>
+      </div>
+
+      <!-- Policy Page -->
+      <div id="policy" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>📜 Policy Intelligence</h1>
+            <p>AI-powered policy recommendations</p>
+          </div>
+        </div>
+        <div class="card">
+          <p style="color: rgba(255,255,255,0.6);">Policy recommendations will be displayed here</p>
+        </div>
+      </div>
+
+      <!-- Circular Economy Page -->
+      <div id="circular" class="page">
+        <div class="top-header">
+          <div class="header-title">
+            <h1>♻️ Circular Economy Intelligence</h1>
+            <p>Waste-to-resource opportunities</p>
+          </div>
+        </div>
+        <div class="card">
+          <p style="color: rgba(255,255,255,0.6);">Circular economy insights will be displayed here</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Page Navigation
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+
+      // Remove active class from all nav links
+      document.querySelectorAll('.nav-link').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Show selected page
+      const page = document.getElementById(pageId);
+      if (page) {
+        page.classList.add('active');
+      }
+
+      // Add active class to clicked nav link
+      const navLink = document.querySelector(`[data-page="${pageId}"]`);
+      if (navLink) {
+        navLink.classList.add('active');
+      }
+
+      // Initialize page-specific content
+      initPageContent(pageId);
+    }
+
+    function initPageContent(pageId) {
+      if (pageId === 'map') {
+        setTimeout(() => initMap(), 100);
+      } else if (pageId === 'wards') {
+        loadWards();
+      } else if (pageId === 'reports') {
+        loadReports();
+      } else if (pageId === 'demo') {
+        setupFileUpload();
+      }
+    }
+
+    // File Upload Handler
+    function setupFileUpload() {
+      const uploadZone = document.getElementById('uploadZone');
+      const fileInput = document.getElementById('fileInput');
+      const uploadPrompt = document.getElementById('uploadPrompt');
+      const previewImage = document.getElementById('previewImage');
+      const classifyBtn = document.getElementById('classifyBtn');
+      const classificationResult = document.getElementById('classificationResult');
+
+      if (!uploadZone) return;
+
+      uploadZone.addEventListener('click', () => fileInput.click());
+
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+          handleFile(e.target.files[0]);
+        }
+      });
+
+      uploadZone.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = '#36f0ff';
+        uploadZone.style.background = 'rgba(54, 240, 255, 0.1)';
+      });
+
+      uploadZone.addEventListener('dragleave', () => {
+        uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
+        uploadZone.style.background = '';
+      });
+
+      uploadZone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
+        uploadZone.style.background = '';
+        if (e.dataTransfer.files.length > 0) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      });
+
+      function handleFile(file) {
+        if (!file.type.startsWith('image/')) {
+          alert('Please upload a valid image file');
+          return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImage.src = e.target.result;
+          previewImage.style.display = 'block';
+          uploadPrompt.style.display = 'none';
+          classifyBtn.disabled = false;
+        };
+        reader.readAsDataURL(file);
+      }
+
+      classifyBtn.addEventListener('click', () => {
+        classifyBtn.disabled = true;
+        classifyBtn.textContent = 'Analyzing...';
+
+        setTimeout(() => {
+          const results = {
+            type: 'Mixed Plastic & Organic',
+            confidence: '94.2%',
+            severity: 'HIGH',
+            volume: '~450 kg',
+            risk: 'Moderate',
+            recommendation: '1. Route waste truck immediately\n2. Alert enforcement if illegal dumping detected\n3. Segregate plastic for recycling\n4. Organic waste to composting facility'
+          };
+
+          const html = `
+            <div style="background: rgba(30, 142, 62, 0.1); border: 1px solid rgba(30, 142, 62, 0.3); border-radius: 8px; padding: 15px; margin-top: 15px;">
+              <h3 style="color: #1e8e3e; font-size: 16px; margin-bottom: 10px;">✅ Classification Complete</h3>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px;">
+                  <span style="color: rgba(255,255,255,0.6);">Waste Type</span>
+                  <span style="color: #36f0ff; font-weight: 600;">${results.type}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px;">
+                  <span style="color: rgba(255,255,255,0.6);">Confidence</span>
+                  <span style="color: #36f0ff; font-weight: 600;">${results.confidence}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px;">
+                  <span style="color: rgba(255,255,255,0.6);">Severity</span>
+                  <span style="color: #f59e0b; font-weight: 600;">${results.severity}</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 4px;">
+                  <span style="color: rgba(255,255,255,0.6);">Volume</span>
+                  <span style="color: #36f0ff; font-weight: 600;">${results.volume}</span>
+                </div>
+              </div>
+            </div>
+          `;
+          
+          classificationResult.innerHTML = html;
+          classificationResult.style.display = 'block';
+          classifyBtn.textContent = 'Analyze with Gemini AI';
+        }, 1500);
+      });
+    }
+
+    // Map Initialization
+    let mapInstance = null;
+    function initMap() {
+      if (mapInstance) return;
+      
+      const mapContainer = document.getElementById('mapContainer');
+      if (!mapContainer) return;
+
+      mapInstance = L.map(mapContainer).setView([9.9252, 78.1198], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(mapInstance);
+
+      // Sample ward markers
+      const wards = [
+        {name: 'Ward 1', lat: 9.93, lng: 78.12, reports: 5},
+        {name: 'Ward 2', lat: 9.92, lng: 78.13, reports: 8},
+        {name: 'Ward 3', lat: 9.91, lng: 78.11, reports: 3}
+      ];
+
+      wards.forEach(ward => {
+        L.circleMarker([ward.lat, ward.lng], {
+          radius: 10,
+          fillColor: '#36f0ff',
+          color: '#1e8e3e',
+          weight: 2,
+          opacity: 0.8,
+          fillOpacity: 0.6
+        }).bindPopup(`<b>${ward.name}</b><br>Reports: ${ward.reports}`).addTo(mapInstance);
+      });
+    }
+
+    // Load Wards
+    function loadWards() {
+      const wardList = document.getElementById('wardList');
+      if (!wardList || wardList.children.length > 0) return;
+
+      const wards = [
+        {id: 1, name: 'Ward 1', population: 45000, reports: 12, priority: 'HIGH'},
+        {id: 2, name: 'Ward 2', population: 38000, reports: 8, priority: 'MEDIUM'},
+        {id: 3, name: 'Ward 3', population: 52000, reports: 15, priority: 'HIGH'},
+        {id: 4, name: 'Ward 4', population: 41000, reports: 5, priority: 'LOW'}
+      ];
+
+      wardList.innerHTML = wards.map(ward => `
+        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='rgba(54, 240, 255, 0.1)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <span style="font-weight: 600; color: #36f0ff;">${ward.name}</span>
+            <span style="background: rgba(255, 107, 107, 0.2); color: #ff6b6b; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600;">${ward.priority}</span>
+          </div>
+          <div style="display: flex; gap: 15px; font-size: 13px; color: rgba(255,255,255,0.6);">
+            <span>Population: ${ward.population.toLocaleString()}</span>
+            <span>Reports: ${ward.reports}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Load Reports
+    function loadReports() {
+      const reportsGrid = document.getElementById('reportsGrid');
+      if (!reportsGrid || reportsGrid.children.length > 0) return;
+
+      const reports = [
+        {id: 1, type: 'Illegal Dumping', location: 'Ward 1', status: 'PENDING'},
+        {id: 2, type: 'Overflow', location: 'Ward 2', status: 'IN_PROGRESS'},
+        {id: 3, type: 'Maintenance', location: 'Ward 3', status: 'RESOLVED'},
+        {id: 4, type: 'Collection', location: 'Ward 4', status: 'PENDING'}
+      ];
+
+      reportsGrid.innerHTML = reports.map(report => `
+        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 8px; border-left: 3px solid ${report.status === 'PENDING' ? '#ffc107' : report.status === 'IN_PROGRESS' ? '#36f0ff' : '#1e8e3e'};">
+          <div style="font-weight: 600; color: #36f0ff; margin-bottom: 5px;">${report.type}</div>
+          <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 8px;">${report.location}</div>
+          <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.7);">${report.status}</span>
+        </div>
+      `).join('');
+    }
+
+    // Initial load
+    document.addEventListener('DOMContentLoaded', () => {
+      loadWards();
+    });
+  </script>
+</body>
+</html>

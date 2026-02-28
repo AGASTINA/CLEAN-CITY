@@ -360,7 +360,7 @@
     // Fetch policy recommendations from API
     async function fetchPolicyRecommendations() {
       try {
-        const response = await fetch('http://localhost:5000/api/intelligence/policy');
+        const response = await fetch('http://localhost:3000/api/intelligence/policy');
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const result = await response.json();
         return result.data;

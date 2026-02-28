@@ -31,14 +31,14 @@
       </div>
     </div>
     <nav class="nav">
-      <a href="#dashboard" onclick="scrollToSection(event, 'dashboard')">Dashboard</a>
-      <a href="#ward-map" onclick="scrollToSection(event, 'ward-map')">Ward Map</a>
-      <a href="#ai-detection" onclick="scrollToSection(event, 'ai-detection')">AI Detection</a>
-      <a href="#policy" onclick="scrollToSection(event, 'policy')">Policy</a>
-      <a href="#enforcement" onclick="scrollToSection(event, 'enforcement')">Reports</a>
+      <a href="/intelligence-dashboard.html">Dashboard</a>
+      <a href="/pages/route-optimization.html">Ward Map</a>
+      <a href="/pages/image-processing.html">AI Detection</a>
+      <a href="/policy-module.html">Policy</a>
+      <a href="/circular-module.html">Reports</a>
     </nav>
     <div class="actions">
-      <button class="primary" onclick="scrollToSection(event, 'ai-detection')">Try AI Demo</button>
+      <button class="primary" onclick="window.location.href='/intelligence-dashboard.html'">Request Demo</button>
     </div>
   </header>
 
@@ -52,8 +52,10 @@
           detection into governance-grade, circular economy intelligence.
         </p>
         <div class="cta">
-          <button class="primary" onclick="scrollToSection(event, 'ai-detection')">Try AI Detection</button>
-          <button class="ghost" onclick="scrollToSection(event, 'dashboard')">View Dashboard</button>
+          <button class="primary" onclick="window.location.href='/intelligence-dashboard.html'">View Live
+            Dashboard</button>
+          <button class="ghost" onclick="window.location.href='/detection-module.html'">Explore AI
+            Intelligence</button>
         </div>
         <div class="hero-stats">
           <div class="stat glass">
@@ -80,45 +82,6 @@
           <div class="pill">AI Hotspot: 24</div>
           <div class="pill">Critical Alerts: 6</div>
           <div class="pill">Overflow Risk: High</div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="ai-detection">
-      <div class="section-header">
-        <h2>🤖 AI Waste Classification</h2>
-        <p>Upload a waste image to see real-time AI-powered classification using Google Gemini</p>
-      </div>
-      <div class="card glass" style="max-width: 800px; margin: 0 auto;">
-        <div style="border: 2px dashed rgba(54, 240, 255, 0.3); border-radius: 12px; padding: 40px; text-align: center; cursor: pointer; transition: all 0.3s;" id="uploadZone">
-          <div id="uploadPrompt">
-            <svg width="48" height="48" style="margin-bottom: 10px; opacity: 0.5;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-            </svg>
-            <p style="font-size: 18px; margin-bottom: 5px;">Click or drag waste image here</p>
-            <p style="font-size: 13px; opacity: 0.5;">Supported: JPG, PNG</p>
-          </div>
-          <img id="previewImage" style="max-width: 100%; max-height: 350px; border-radius: 8px; margin: 15px 0; display: none;" />
-          <input type="file" id="fileInput" accept="image/*" style="display: none;" />
-        </div>
-        <button id="classifyBtn" class="primary" style="width: 100%; margin-top: 20px;" disabled>
-          Analyze with Gemini AI
-        </button>
-        <div id="classificationResult" style="display: none;"></div>
-      </div>
-    </section>
-
-    <section class="section" id="ward-map">
-      <div class="section-header">
-        <h2>🗺️ Interactive Ward Map</h2>
-        <p>Real-time visualization of all wards with live statistics</p>
-      </div>
-      <div class="card glass">
-        <div id="wardMapContainer" style="height: 500px; border-radius: 12px; overflow: hidden;"></div>
-        <div style="display: flex; gap: 15px; margin-top: 15px; flex-wrap: wrap;">
-          <div class="pill">Total Wards: <strong id="totalWardsCount">-</strong></div>
-          <div class="pill">Active Reports: <strong id="activeReportsCount">-</strong></div>
-          <div class="pill">Avg Response: <strong id="avgResponseTime">-</strong></div>
         </div>
       </div>
     </section>
@@ -278,15 +241,6 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="enhanced-app.js"></script>
   <script>
-    // Smooth scroll navigation
-    function scrollToSection(event, sectionId) {
-      event.preventDefault();
-      const section = document.getElementById(sectionId);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }
-
     // Initialize hero map
     document.addEventListener('DOMContentLoaded', function () {
       const heroMap = L.map('heroMap', {
@@ -320,190 +274,7 @@
           fillOpacity: 0.4
         }).addTo(heroMap);
       });
-
-      // Initialize AI Detection file upload
-      setupFileUpload();
-
-      // Initialize ward map
-      setupWardMap();
-
-      // Load statistics
-      updateStatistics();
     });
-
-    // File Upload and Classification
-    function setupFileUpload() {
-      const uploadZone = document.getElementById('uploadZone');
-      const fileInput = document.getElementById('fileInput');
-      const uploadPrompt = document.getElementById('uploadPrompt');
-      const previewImage = document.getElementById('previewImage');
-      const classifyBtn = document.getElementById('classifyBtn');
-      const classificationResult = document.getElementById('classificationResult');
-
-      if (!uploadZone) return;
-
-      uploadZone.addEventListener('click', () => fileInput.click());
-
-      fileInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-          handleFile(e.target.files[0]);
-        }
-      });
-
-      uploadZone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadZone.style.borderColor = '#36f0ff';
-        uploadZone.style.background = 'rgba(54, 240, 255, 0.1)';
-      });
-
-      uploadZone.addEventListener('dragleave', () => {
-        uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
-        uploadZone.style.background = '';
-      });
-
-      uploadZone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadZone.style.borderColor = 'rgba(54, 240, 255, 0.3)';
-        uploadZone.style.background = '';
-        if (e.dataTransfer.files.length > 0) {
-          handleFile(e.dataTransfer.files[0]);
-        }
-      });
-
-      function handleFile(file) {
-        if (!file.type.startsWith('image/')) {
-          alert('Please upload a valid image file');
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          previewImage.src = e.target.result;
-          previewImage.style.display = 'block';
-          uploadPrompt.style.display = 'none';
-          classifyBtn.disabled = false;
-        };
-        reader.readAsDataURL(file);
-      }
-
-      classifyBtn.addEventListener('click', () => {
-        classifyBtn.disabled = true;
-        classifyBtn.textContent = 'Analyzing...';
-
-        // Simulate API call - replace with actual Gemini API call
-        setTimeout(() => {
-          const results = {
-            type: 'Mixed Plastic & Organic',
-            confidence: '94.2%',
-            severity: 'HIGH',
-            volume: '~450 kg',
-            risk: 'Moderate',
-            recommendations: [
-              'Route waste truck immediately',
-              'Alert enforcement if illegal dumping',
-              'Segregate plastic for recycling',
-              'Organic waste to composting facility'
-            ]
-          };
-
-          const html = `
-            <div style="background: rgba(30, 142, 62, 0.1); border: 1px solid rgba(30, 142, 62, 0.3); border-radius: 12px; padding: 20px; margin-top: 20px;">
-              <h3 style="color: #1e8e3e; font-size: 18px; margin-bottom: 15px;">✅ Classification Complete</h3>
-              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px;">
-                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                  <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Waste Type</div>
-                  <div style="color: #36f0ff; font-weight: 600;">${results.type}</div>
-                </div>
-                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                  <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Confidence</div>
-                  <div style="color: #36f0ff; font-weight: 600;">${results.confidence}</div>
-                </div>
-                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                  <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Severity</div>
-                  <div style="color: #f59e0b; font-weight: 600;">${results.severity}</div>
-                </div>
-                <div style="padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
-                  <div style="font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 5px;">Volume</div>
-                  <div style="color: #36f0ff; font-weight: 600;">${results.volume}</div>
-                </div>
-              </div>
-              <div style="padding: 15px; background: rgba(255,255,255,0.03); border-radius: 8px;">
-                <div style="font-size: 13px; color: rgba(255,255,255,0.6); margin-bottom: 10px;">Recommendations:</div>
-                ${results.recommendations.map((rec, i) => `<div style="margin-bottom: 5px; color: rgba(255,255,255,0.9);">• ${rec}</div>`).join('')}
-              </div>
-            </div>
-          `;
-          
-          classificationResult.innerHTML = html;
-          classificationResult.style.display = 'block';
-          classifyBtn.textContent = 'Analyze with Gemini AI';
-          classifyBtn.disabled = false;
-        }, 1500);
-      });
-    }
-
-    // Ward Map Setup
-    let wardMapInstance = null;
-    function setupWardMap() {
-      const container = document.getElementById('wardMapContainer');
-      if (!container) return;
-
-      // Initialize map
-      wardMapInstance = L.map(container).setView([9.9252, 78.1198], 12);
-      
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors'
-      }).addTo(wardMapInstance);
-
-      // Sample ward data
-      const wards = [
-        { id: 1, name: 'Ward 1 - Anna Nagar', lat: 9.93, lng: 78.12, reports: 12, status: 'high' },
-        { id: 2, name: 'Ward 2 - Meenakshi Nagar', lat: 9.92, lng: 78.13, reports: 8, status: 'medium' },
-        { id: 3, name: 'Ward 3 - Tallakulam', lat: 9.91, lng: 78.11, reports: 15, status: 'high' },
-        { id: 4, name: 'Ward 4 - Goripalayam', lat: 9.94, lng: 78.14, reports: 5, status: 'low' },
-        { id: 5, name: 'Ward 5 - Sellur', lat: 9.90, lng: 78.12, reports: 10, status: 'medium' },
-        { id: 6, name: 'Ward 6 - Pasumalai', lat: 9.95, lng: 78.10, reports: 7, status: 'medium' }
-      ];
-
-      wards.forEach(ward => {
-        const color = ward.status === 'high' ? '#ef4444' :
-                      ward.status === 'medium' ? '#f59e0b' : '#10b981';
-
-        L.circleMarker([ward.lat, ward.lng], {
-          radius: 15,
-          fillColor: color,
-          color: '#fff',
-          weight: 2,
-          opacity: 1,
-          fillOpacity: 0.7
-        }).bindPopup(`
-          <div style="padding: 5px;">
-            <strong style="color: #0a0e27;">${ward.name}</strong><br>
-            <span style="font-size: 12px; color: #666;">Reports: ${ward.reports}</span><br>
-            <span style="font-size: 12px; color: ${color}; font-weight: 600;">${ward.status.toUpperCase()}</span>
-          </div>
-        `).addTo(wardMapInstance);
-      });
-
-      // Update statistics
-      document.getElementById('totalWardsCount').textContent = wards.length;
-      document.getElementById('activeReportsCount').textContent = wards.reduce((sum, w) => sum + w.reports, 0);
-      document.getElementById('avgResponseTime').textContent = '12m';
-    }
-
-    // Update Statistics
-    function updateStatistics() {
-      fetch('/api/dashboard/stats')
-        .then(res => res.json())
-        .then(data => {
-          // Update stats if API is available
-          // For now, using demo data
-        })
-        .catch(() => {
-          // Use demo data
-          console.log('Using demo statistics');
-        });
-    }
   </script>
 </body>
 

@@ -1,4 +1,4 @@
-# MADURAI SWACHH AI GRID - Backend API
+# MadurAI Urban Intelligence Grid (MUIG) - Backend API
 
 ## Complete Backend System with MongoDB, Gemini AI, and Real-time Features
 

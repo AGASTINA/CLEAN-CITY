@@ -101,7 +101,7 @@ app.use(express.static(path.join(__dirname, '../')));
 // Root route (API Info)
 app.get('/api', (req, res) => {
   res.json({
-    name: 'Madurai Swachh AI Grid API',
+    name: 'MadurAI Urban Intelligence Grid (MUIG) API',
     version: '1.0.0',
     description: 'Government-grade AI waste governance platform',
     endpoints: {
@@ -146,7 +146,7 @@ server.listen(PORT, () => {
   console.log(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                                                           ║
-║   🌿 MADURAI SWACHH AI GRID - Backend Server            ║
+║   🌿 MadurAI Urban Intelligence Grid (MUIG) Backend      ║
 ║                                                           ║
 ║   Status: ✅ RUNNING                                      ║
 ║   Port: ${PORT}                                             ║

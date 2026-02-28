@@ -436,7 +436,7 @@ window.viewWardDetails = function(wardNumber) {
 // INITIALIZE APP
 // ============================
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🚀 Initializing Enhanced Madurai Swachh AI Grid...');
+  console.log('🚀 Initializing Enhanced MadurAI Urban Intelligence Grid (MUIG)...');
   
   // Load real data
   await loadWardsData();

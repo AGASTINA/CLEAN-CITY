@@ -1,4 +1,4 @@
-# 🚀 Madurai Swachh AI - Working Demo Guide
+# 🚀 MadurAI Urban Intelligence Grid (MUIG) - Working Demo Guide
 
 ## ✅ What's Working Now
 

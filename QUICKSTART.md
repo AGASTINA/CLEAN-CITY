@@ -1,4 +1,4 @@
-# Quick Start Guide - Madurai Swachh AI Platform
+# Quick Start Guide - MadurAI Urban Intelligence Grid (MUIG)
 
 ## 🚀 5-Minute Setup
 

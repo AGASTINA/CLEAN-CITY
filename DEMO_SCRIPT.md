@@ -17,7 +17,7 @@
 ### **Opening (30 seconds)**
 *Open: http://localhost:3000/*
 
-"This is **Madurai Swachh AI Grid** - a government-grade predictive waste governance platform powered by Google Gemini AI and Cloud Firestore."
+"This is **MadurAI Urban Intelligence Grid (MUIG)** - a government-grade predictive waste governance platform powered by Google Gemini AI and Cloud Firestore."
 
 *Scroll slowly from hero*
 
@@ -205,7 +205,7 @@ Use these:
 
 ## ⚡ 30-SECOND ELEVATOR PITCH
 
-"Madurai Swachh AI Grid transforms waste management from reactive cleanup to predictive governance. Using Google Gemini AI, we classify waste from images, predict overflow before it happens, detect illegal dumping automatically via CCTV, and convert waste into circular economy revenue - generating ₹75,000+ monthly while creating 35 jobs. All with a government-grade dashboard that gives policymakers actionable intelligence, not just reports. Built on Google Cloud Firestore, production-ready, and scalable to every Smart City in India."
+"MadurAI Urban Intelligence Grid (MUIG) transforms waste management from reactive cleanup to predictive governance. Using Google Gemini AI, we classify waste from images, predict overflow before it happens, detect illegal dumping automatically via CCTV, and convert waste into circular economy revenue - generating ₹75,000+ monthly while creating 35 jobs. All with a government-grade dashboard that gives policymakers actionable intelligence, not just reports. Built on Google Cloud Firestore, production-ready, and scalable to every Smart City in India."
 
 ---
 

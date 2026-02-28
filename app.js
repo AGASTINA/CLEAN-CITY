@@ -46,7 +46,7 @@ class Particle {
   }
 }
 
-const particles = [];
+console.log("🌿 MadurAI Urban Intelligence Grid (MUIG) – Loaded & Ready for Governance");
 for (let i = 0; i < 40; i++) {
   particles.push(new Particle());
 }
@@ -232,7 +232,7 @@ window.addEventListener("load", () => {
 document.addEventListener("keydown", (e) => {
   if (e.key === "?") {
     alert(
-      "Madurai Swachh AI Grid\n\nKeyboard Shortcuts:\n↓ Scroll\nAlt+D: Dashboard\nEsc: Close modals\n\nPowered by Gemini AI"
+        "MadurAI Urban Intelligence Grid (MUIG)\n\nKeyboard Shortcuts:\n↓ Scroll\nAlt+D: Dashboard\nEsc: Close modals\n\nPowered by Gemini AI"
     );
   }
 });
@@ -270,7 +270,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-console.log("🌿 Madurai Swachh AI Grid – Loaded & Ready for Governance");
+console.log("🌿 MadurAI Urban Intelligence Grid (MUIG) – Loaded & Ready for Governance");
 console.log(
   "Status: Government-grade AI intelligence layer active. Powered by Gemini AI."
 );

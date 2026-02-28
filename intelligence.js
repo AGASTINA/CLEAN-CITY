@@ -1,5 +1,5 @@
 /**
- * MADURAI SWACHH AI GRID
+ * MadurAI Urban Intelligence Grid (MUIG)
  * Intelligence Engine - Core Prediction Algorithms
  * 
  * 6 Core Modules:

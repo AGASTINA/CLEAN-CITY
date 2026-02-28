@@ -1,4 +1,4 @@
-# Madurai Swachh AI Grid
+# MadurAI Urban Intelligence Grid (MUIG)
 ## Predictive Waste Governance & Circular Intelligence Platform
 
 A government-grade AI web platform transforming waste detection into predictive governance and circular economy intelligence for smart city governance.
@@ -7,7 +7,7 @@ A government-grade AI web platform transforming waste detection into predictive 
 
 ## 🚀 Project Overview
 
-**MADURAI SWACHH AI GRID** is a futuristic, high-tech platform designed for government deployment at scale. It integrates:
+**MadurAI Urban Intelligence Grid (MUIG)** is a futuristic, high-tech platform designed for government deployment at scale. It integrates:
 
 - **CCTV Integration** – AI-powered camera alerts and illegal dumping detection
 - **Citizen Intelligence** – Crowdsourced waste reporting with gamification
@@ -218,7 +218,7 @@ The platform includes 5 ready-to-use prompts for municipal teams:
 
 ## 🎤 Pitch Summary
 
-> **"Madurai Swachh AI Grid is not a reporting app. It is an AI governance intelligence layer that integrates existing infrastructure into a predictive, optimized, and circular waste management ecosystem."**
+> **"MadurAI Urban Intelligence Grid (MUIG) is not a reporting app. It is an AI governance intelligence layer that integrates existing infrastructure into a predictive, optimized, and circular waste management ecosystem."**
 
 > **"We transform waste from a civic burden into a measurable economic and environmental asset."**
 

@@ -1,4 +1,4 @@
-# 🌟 Madurai Swachh AI Grid - Predictive Waste Governance Platform
+# 🌟 MadurAI Urban Intelligence Grid (MUIG) - Predictive Waste Governance Platform
 
 > **Government-grade intelligent waste management system powered by Google Gemini AI and Firestore**
 

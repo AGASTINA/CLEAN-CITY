@@ -1,0 +1,52 @@
+{
+  "users": [
+    { "id": "USR-admin-001", "name": "System Administrator", "email": "admin@maduraiswachh.gov.in", "role": "admin", "wardNumber": 1, "createdAt": "2026-01-01T00:00:00Z" },
+    { "id": "USR-super-001", "name": "Rajesh Kumar", "email": "supervisor@maduraiswachh.gov.in", "role": "supervisor", "wardNumber": 1, "createdAt": "2026-01-01T00:00:00Z" }
+  ],
+  "wards": [
+    { "id": "WRD-1", "wardNumber": 1, "name": "SS Colony", "zone": "Central", "population": 12500, "area": 2.4, "totalReports": 45, "resolvedReports": 38, "cleanlinessIndex": 87.5, "coordinates": [9.9252, 78.1198] },
+    { "id": "WRD-2", "wardNumber": 2, "name": "Anna Nagar", "zone": "Central", "population": 15800, "area": 3.1, "totalReports": 52, "resolvedReports": 45, "cleanlinessIndex": 84.3, "coordinates": [9.9300, 78.1280] },
+    { "id": "WRD-3", "wardNumber": 3, "name": "Meenakshi Amman Temple Area", "zone": "Central", "population": 22000, "area": 1.8, "totalReports": 68, "resolvedReports": 55, "cleanlinessIndex": 78.9, "coordinates": [9.9195, 78.1190] },
+    { "id": "WRD-4", "wardNumber": 4, "name": "Goripalayam", "zone": "Central", "population": 18200, "area": 2.9, "totalReports": 58, "resolvedReports": 50, "cleanlinessIndex": 81.2, "coordinates": [9.9230, 78.1120] },
+    { "id": "WRD-5", "wardNumber": 5, "name": "Alagar Kovil Road", "zone": "East", "population": 14500, "area": 4.2, "totalReports": 42, "resolvedReports": 36, "cleanlinessIndex": 85.6, "coordinates": [9.9180, 78.1380] },
+    { "id": "WRD-6", "wardNumber": 6, "name": "K.Pudur", "zone": "North", "population": 16200, "area": 3.8, "totalReports": 48, "resolvedReports": 41, "cleanlinessIndex": 83.4, "coordinates": [9.9520, 78.1150] },
+    { "id": "WRD-7", "wardNumber": 7, "name": "Koodal Nagar", "zone": "North", "population": 13800, "area": 2.7, "totalReports": 38, "resolvedReports": 33, "cleanlinessIndex": 86.8, "coordinates": [9.9480, 78.1200] },
+    { "id": "WRD-8", "wardNumber": 8, "name": "Ellis Nagar", "zone": "North", "population": 17500, "area": 3.2, "totalReports": 55, "resolvedReports": 47, "cleanlinessIndex": 82.1, "coordinates": [9.9450, 78.1350] },
+    { "id": "WRD-9", "wardNumber": 9, "name": "Simmakkal", "zone": "North", "population": 19800, "area": 2.1, "totalReports": 64, "resolvedReports": 52, "cleanlinessIndex": 79.5, "coordinates": [9.9210, 78.1170] },
+    { "id": "WRD-10", "wardNumber": 10, "name": "Town Hall", "zone": "North", "population": 21000, "area": 1.9, "totalReports": 72, "resolvedReports": 60, "cleanlinessIndex": 77.8, "coordinates": [9.9240, 78.1190] },
+    { "id": "WRD-11", "wardNumber": 11, "name": "Villapuram", "zone": "South", "population": 14800, "area": 4.5, "totalReports": 44, "resolvedReports": 38, "cleanlinessIndex": 84.9, "coordinates": [9.8950, 78.1100] },
+    { "id": "WRD-12", "wardNumber": 12, "name": "Thirunagar", "zone": "South", "population": 18900, "area": 5.2, "totalReports": 62, "resolvedReports": 51, "cleanlinessIndex": 80.3, "coordinates": [9.8920, 78.1320] },
+    { "id": "WRD-13", "wardNumber": 13, "name": "Avaniyapuram", "zone": "South", "population": 16500, "area": 6.8, "totalReports": 50, "resolvedReports": 42, "cleanlinessIndex": 83.7, "coordinates": [9.8650, 78.1180] },
+    { "id": "WRD-14", "wardNumber": 14, "name": "Pasumalai", "zone": "South", "population": 11200, "area": 7.2, "totalReports": 32, "resolvedReports": 28, "cleanlinessIndex": 88.4, "coordinates": [9.9080, 78.0950] },
+    { "id": "WRD-15", "wardNumber": 15, "name": "Sellur", "zone": "South", "population": 15600, "area": 4.8, "totalReports": 48, "resolvedReports": 40, "cleanlinessIndex": 84.2, "coordinates": [9.9000, 78.1450] },
+    { "id": "WRD-16", "wardNumber": 16, "name": "Ponmeni", "zone": "East", "population": 17200, "area": 3.9, "totalReports": 56, "resolvedReports": 47, "cleanlinessIndex": 82.8, "coordinates": [9.9320, 78.1550] },
+    { "id": "WRD-17", "wardNumber": 17, "name": "Uthangudi", "zone": "East", "population": 13900, "area": 4.1, "totalReports": 41, "resolvedReports": 34, "cleanlinessIndex": 85.1, "coordinates": [9.9180, 78.1620] },
+    { "id": "WRD-18", "wardNumber": 18, "name": "Harveypatti", "zone": "East", "population": 12800, "area": 5.3, "totalReports": 39, "resolvedReports": 32, "cleanlinessIndex": 86.4, "coordinates": [9.9050, 78.1580] },
+    { "id": "WRD-19", "wardNumber": 19, "name": "Alagarkovil Road", "zone": "East", "population": 14200, "area": 4.7, "totalReports": 44, "resolvedReports": 37, "cleanlinessIndex": 84.9, "coordinates": [9.8980, 78.1650] },
+    { "id": "WRD-20", "wardNumber": 20, "name": "Teppakulam", "zone": "East", "population": 16800, "area": 2.8, "totalReports": 52, "resolvedReports": 44, "cleanlinessIndex": 83.2, "coordinates": [9.9150, 78.1280] },
+    { "id": "WRD-21", "wardNumber": 21, "name": "Arapalayam", "zone": "West", "population": 15300, "area": 5.1, "totalReports": 47, "resolvedReports": 40, "cleanlinessIndex": 84.5, "coordinates": [9.9280, 78.0980] },
+    { "id": "WRD-22", "wardNumber": 22, "name": "Jaihindpuram", "zone": "West", "population": 14700, "area": 4.6, "totalReports": 45, "resolvedReports": 38, "cleanlinessIndex": 85.3, "coordinates": [9.9350, 78.0890] },
+    { "id": "WRD-23", "wardNumber": 23, "name": "Anuppanadi", "zone": "West", "population": 16900, "area": 3.7, "totalReports": 52, "resolvedReports": 44, "cleanlinessIndex": 83.6, "coordinates": [9.9180, 78.0920] },
+    { "id": "WRD-24", "wardNumber": 24, "name": "Bibikulam", "zone": "West", "population": 18500, "area": 2.9, "totalReports": 57, "resolvedReports": 48, "cleanlinessIndex": 81.8, "coordinates": [9.9210, 78.1050] },
+    { "id": "WRD-25", "wardNumber": 25, "name": "TVS Nagar", "zone": "West", "population": 15800, "area": 3.5, "totalReports": 48, "resolvedReports": 41, "cleanlinessIndex": 84.2, "coordinates": [9.9420, 78.1020] },
+    { "id": "WRD-26", "wardNumber": 26, "name": "Railway Colony", "zone": "Central", "population": 19200, "area": 2.2, "totalReports": 59, "resolvedReports": 50, "cleanlinessIndex": 80.9, "coordinates": [9.9280, 78.1220] },
+    { "id": "WRD-27", "wardNumber": 27, "name": "Periyar Bus Stand Area", "zone": "Central", "population": 24000, "area": 1.6, "totalReports": 74, "resolvedReports": 62, "cleanlinessIndex": 76.3, "coordinates": [9.9180, 78.1190] },
+    { "id": "WRD-28", "wardNumber": 28, "name": "Tallakulam", "zone": "South", "population": 17600, "area": 3.8, "totalReports": 54, "resolvedReports": 46, "cleanlinessIndex": 82.7, "coordinates": [9.9080, 78.1350] },
+    { "id": "WRD-29", "wardNumber": 29, "name": "Mattuthavani", "zone": "East", "population": 13500, "area": 4.9, "totalReports": 41, "resolvedReports": 35, "cleanlinessIndex": 85.8, "coordinates": [9.9050, 78.1420] },
+    { "id": "WRD-30", "wardNumber": 30, "name": "Surveyor Colony", "zone": "North", "population": 15200, "area": 3.1, "totalReports": 46, "resolvedReports": 39, "cleanlinessIndex": 84.6, "coordinates": [9.9580, 78.1180] }
+  ],
+  "reports": [
+    { "id": "WR-1", "wardNumber": 1, "address": "East Veli Street, SS Colony", "wasteType": "plastic", "status": "resolved", "severityScore": 4, "estimatedQuantity": 250, "createdAt": "2026-02-20T10:30:00Z", "resolvedAt": "2026-02-22T14:00:00Z" },
+    { "id": "WR-2", "wardNumber": 2, "address": "Anna Main Road, Anna Nagar", "wasteType": "organic", "status": "resolved", "severityScore": 3, "estimatedQuantity": 180, "createdAt": "2026-02-21T08:00:00Z", "resolvedAt": "2026-02-23T11:00:00Z" },
+    { "id": "WR-3", "wardNumber": 3, "address": "Temple Street, Meenakshi Area", "wasteType": "mixed", "status": "in-progress", "severityScore": 5, "estimatedQuantity": 420, "createdAt": "2026-02-25T12:00:00Z" },
+    { "id": "WR-4", "wardNumber": 4, "address": "Goripalayam Main, Goripalayam", "wasteType": "e-waste", "status": "assigned", "severityScore": 2, "estimatedQuantity": 85, "createdAt": "2026-02-26T09:00:00Z" },
+    { "id": "WR-5", "wardNumber": 5, "address": "Alagar Road, Alagar Kovil Area", "wasteType": "construction", "status": "reported", "severityScore": 3, "estimatedQuantity": 520, "createdAt": "2026-02-28T14:30:00Z" }
+  ],
+  "policies": [
+    { "id": "POL-1", "wardNumber": 1, "title": "Smart Bin Installation - SS Colony", "priority": "high", "status": "approved", "budgetEstimate": 250000, "createdAt": "2026-02-15T00:00:00Z" },
+    { "id": "POL-2", "wardNumber": 2, "title": "Collection Route Optimization - Anna Nagar", "priority": "high", "status": "approved", "budgetEstimate": 180000, "createdAt": "2026-02-16T00:00:00Z" },
+    { "id": "POL-3", "wardNumber": 3, "title": "Community Awareness Campaign - Temple Area", "priority": "medium", "status": "under-review", "budgetEstimate": 120000, "createdAt": "2026-02-20T00:00:00Z" },
+    { "id": "POL-4", "wardNumber": 4, "title": "Infrastructure Improvement - Goripalayam", "priority": "critical", "status": "generated", "budgetEstimate": 450000, "createdAt": "2026-02-25T00:00:00Z" },
+    { "id": "POL-5", "wardNumber": 5, "title": "E-Waste Management System - Alagar Kovil", "priority": "high", "status": "approved", "budgetEstimate": 320000, "createdAt": "2026-02-18T00:00:00Z" }
+  ]
+}

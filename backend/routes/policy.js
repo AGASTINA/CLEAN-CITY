@@ -1,8 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const { getById, getAll, createDoc, updateDoc, deleteDoc, COLLECTIONS, toDate } = require('../services/firestoreService');
 const geminiService = require('../services/geminiService');
 const { protect, authorize } = require('../middleware/auth');
+
+// Load mock data for fallback
+let mockData = {};
+try {
+  const mockDataPath = path.join(__dirname, '../data/mockData.json');
+  if (fs.existsSync(mockDataPath)) {
+    mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf8'));
+  }
+} catch (error) {
+  console.warn('⚠️ Mock data file not found, will use Firestore only');
+}
 
 // Helper function for geospatial calculations
 function getDistanceKm(coords1, coords2) {
@@ -244,6 +257,33 @@ router.get('/', protect, async (req, res) => {
 
   } catch (error) {
     console.error('Get Policies Error:', error);
+    
+    // Fallback to mock data if Firestore is unavailable
+    if (mockData.policies && mockData.policies.length > 0) {
+      console.log('📊 Serving mock policies data...');
+      let mockPolicies = [...mockData.policies];
+      
+      if (req.query.wardNumber) {
+        mockPolicies = mockPolicies.filter(p => p.wardNumber === parseInt(req.query.wardNumber));
+      }
+      
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 20;
+      const skip = (page - 1) * limit;
+      const total = mockPolicies.length;
+      
+      return res.json({
+        success: true,
+        data: mockPolicies.slice(skip, skip + limit),
+        pagination: {
+          currentPage: page,
+          totalPages: Math.ceil(total / limit),
+          totalRecords: total
+        },
+        source: 'mock'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Error fetching policy recommendations',

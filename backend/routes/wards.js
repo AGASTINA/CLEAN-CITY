@@ -1,8 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const geminiService = require('../services/geminiService');
 const { protect, authorize } = require('../middleware/auth');
 const { getById, getAll, createDoc, updateDoc, deleteDoc, COLLECTIONS, toDate } = require('../services/firestoreService');
+
+// Load mock data for fallback
+let mockData = {};
+try {
+  const mockDataPath = path.join(__dirname, '../data/mockData.json');
+  if (fs.existsSync(mockDataPath)) {
+    mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf8'));
+  }
+} catch (error) {
+  console.warn('⚠️ Mock data file not found, will use Firestore only');
+}
 
 // @route   GET /api/wards
 // @desc    Get all wards
@@ -56,6 +69,18 @@ router.get('/', async (req, res) => {
 
   } catch (error) {
     console.error('Get Wards Error:', error);
+    
+    // Fallback to mock data if Firestore is unavailable
+    if (mockData.wards && mockData.wards.length > 0) {
+      console.log('📊 Serving mock wards data...');
+      return res.json({
+        success: true,
+        data: mockData.wards,
+        count: mockData.wards.length,
+        source: 'mock'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Error fetching wards',

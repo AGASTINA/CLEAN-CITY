@@ -1,9 +1,22 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 const { COLLECTIONS, getAll, getById, createDoc, updateDoc, toDate } = require('../services/firestoreService');
 const geminiService = require('../services/geminiService');
 const { protect, authorize } = require('../middleware/auth');
+
+// Load mock data for fallback
+let mockData = {};
+try {
+  const mockDataPath = path.join(__dirname, '../data/mockData.json');
+  if (fs.existsSync(mockDataPath)) {
+    mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf8'));
+  }
+} catch (error) {
+  console.warn('⚠️ Mock data file not found, will use Firestore only');
+}
 
 const buildReportId = () => `WR-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
@@ -244,6 +257,24 @@ router.get('/', protect, async (req, res) => {
 
   } catch (error) {
     console.error('Get Reports Error:', error);
+    
+    // Fallback to mock data if Firestore is unavailable
+    if (mockData.reports && mockData.reports.length > 0) {
+      console.log('📊 Serving mock reports data...');
+      const mockReports = mockData.reports.slice(0, parseInt(limit) || 20);
+      return res.json({
+        success: true,
+        data: mockReports,
+        pagination: {
+          currentPage: parseInt(page) || 1,
+          totalPages: 1,
+          totalRecords: mockData.reports.length,
+          limit: parseInt(limit) || 20
+        },
+        source: 'mock'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Error fetching reports',

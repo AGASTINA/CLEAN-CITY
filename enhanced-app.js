@@ -1,5 +1,5 @@
 // Enhanced App with Full Backend Integration
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = 'http://localhost:3000/api';
 let authToken = localStorage.getItem('authToken');
 let currentUser = JSON.parse(localStorage.getItem('user') || 'null');
 let socket = null;
@@ -114,10 +114,25 @@ async function loadWardsData() {
       updateDashboardWards();
       updateLeaderboard();
       updateHeroMap();
+      return;
     }
   } catch (error) {
-    console.error('Error loading wards:', error);
+    console.error('Error loading wards, using demo data:', error);
   }
+  
+  // Fallback to demo data
+  wardsData = [
+    { wardNumber: 1, name: 'Anna Nagar', population: 45000, totalReports: 12, resolvedReports: 10, cleanlinessIndex: 87.5, area: 3.2, coordinates: [9.93, 78.12] },
+    { wardNumber: 2, name: 'Meenakshi Nagar', population: 38000, totalReports: 8, resolvedReports: 7, cleanlinessIndex: 82.3, area: 2.8, coordinates: [9.92, 78.13] },
+    { wardNumber: 3, name: 'Tallakulam', population: 52000, totalReports: 15, resolvedReports: 12, cleanlinessIndex: 78.9, area: 4.1, coordinates: [9.91, 78.11] },
+    { wardNumber: 4, name: 'Goripalayam', population: 41000, totalReports: 5, resolvedReports: 5, cleanlinessIndex: 91.2, area: 2.5, coordinates: [9.94, 78.14] },
+    { wardNumber: 5, name: 'Sellur', population: 48000, totalReports: 10, resolvedReports: 8, cleanlinessIndex: 85.6, area: 3.5, coordinates: [9.90, 78.12] },
+    { wardNumber: 6, name: 'Pasumalai', population: 35000, totalReports: 7, resolvedReports: 6, cleanlinessIndex: 88.4, area: 2.9, coordinates: [9.95, 78.10] }
+  ];
+  updateHeroStats();
+  updateDashboardWards();
+  updateLeaderboard();
+  updateHeroMap();
 }
 
 function updateHeroStats() {

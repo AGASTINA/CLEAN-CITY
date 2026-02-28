@@ -1,6 +1,58 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const { getAll, COLLECTIONS } = require('../services/firestoreService');
+
+// Load mock data for fallback
+let mockData = {};
+try {
+  const mockDataPath = path.join(__dirname, '../data/mockData.json');
+  if (fs.existsSync(mockDataPath)) {
+    mockData = JSON.parse(fs.readFileSync(mockDataPath, 'utf8'));
+  }
+} catch (error) {
+  console.warn('⚠️ Mock data file not found, will use Firestore only');
+}
+
+// Generate mock intelligence dashboard data
+function generateMockDashboardData() {
+  const wards = mockData.wards || [];
+  const reports = mockData.reports || [];
+  
+  const criticalReports = reports.filter(r => r.severityScore >= 4).length;
+  const highReports = reports.filter(r => r.severityScore >= 3 && r.severityScore < 4).length;
+  const activeReports = reports.filter(r => r.status !== 'resolved').length;
+  
+  return {
+    success: true,
+    data: {
+      alerts: {
+        total: activeReports,
+        critical: criticalReports,
+        high: highReports,
+        list: reports.map(r => ({
+          wardNumber: r.wardNumber,
+          wardName: wards.find(w => w.wardNumber === r.wardNumber)?.name || `Ward ${r.wardNumber}`,
+          type: 'waste_report',
+          severity: r.severityScore / 5,
+          message: r.address,
+          timestamp: r.createdAt
+        }))
+      },
+      trucks: {
+        active: Math.floor(Math.random() * 4) + 2,
+        total: 8
+      },
+      predictions: {
+        averageOverflowRisk: 45 + Math.random() * 20,
+        highRiskWards: Math.floor(Math.random() * 3) + 1
+      },
+      wards: wards.length,
+      source: 'mock'
+    }
+  };
+}
 
 // @route   GET /api/intelligence/dashboard
 // @desc    Get unified dashboard data
@@ -54,15 +106,11 @@ router.get('/dashboard', async (req, res) => {
     });
   } catch (error) {
     console.error('Intelligence Dashboard Error:', error);
-    res.json({
-      success: true,
-      data: {
-        alerts: { total: 12, critical: 3, high: 5, list: [] },
-        trucks: { active: 4, total: 8 },
-        predictions: { averageOverflowRisk: 45, highRiskWards: 2 },
-        wards: 47
-      }
-    });
+    
+    // Fallback to mock data
+    const mockData = generateMockDashboardData();
+    console.log('📊 Serving mock dashboard data...');
+    res.json(mockData);
   }
 });
     // @route   GET /api/intelligence/report/download
@@ -104,7 +152,134 @@ router.get('/dashboard', async (req, res) => {
       }
     });
 
-    module.exports = router;
+function generateCircularData() {
+  const reports = mockData.reports || [];
+  const totalReports = reports.length;
+  const recycledWeight = totalReports * 120; // Mock: avg 120kg per report
+  const totalValue = totalReports * 8500; // Mock: avg ₹8500 value
+  const jobsCreated = Math.floor(totalReports * 0.35);
+  const co2Saved = recycledWeight * 2.5;
+  const waterSaved = recycledWeight * 15;
+  const energySaved = recycledWeight * 8;
+
+  const wasteBreakdown = [
+    { type: 'Plastic', weight: recycledWeight * 0.35, value: recycledWeight * 0.35 * 25 },
+    { type: 'Organic', weight: recycledWeight * 0.40, value: recycledWeight * 0.40 * 22 },
+    { type: 'Metal', weight: recycledWeight * 0.15, value: recycledWeight * 0.15 * 35 },
+    { type: 'E-Waste', weight: recycledWeight * 0.10, value: recycledWeight * 0.10 * 45 }
+  ];
+
+  return {
+    success: true,
+    data: {
+      totalValue: totalValue,
+      jobsCount: jobsCreated,
+      wasteKgs: recycledWeight,
+      breakdown: wasteBreakdown,
+      environmental: {
+        co2Saved: co2Saved,
+        waterSaved: waterSaved,
+        energySaved: energySaved
+      },
+      source: 'mock'
+    }
+  };
+}
+
+function generateDetectionData() {
+  const reports = mockData.reports || [];
+  const totalClassifications = reports.length;
+  const illegalDetections = reports.filter(r => r.wasteType === 'e-waste' || r.wasteType === 'plastic').length;
+  const avgConfidence = 89.5;
+
+  return {
+    success: true,
+    data: {
+      totalClassifications: totalClassifications,
+      illegalDetections: illegalDetections,
+      averageConfidence: avgConfidence,
+      detectionHistory: reports.map((r, idx) => ({
+        id: r.id,
+        wardName: mockData.wards.find(w => w.wardNumber === r.wardNumber)?.name || `Ward ${r.wardNumber}`,
+        timestamp: r.createdAt,
+        wasteType: r.wasteType,
+        confidence: 85 + Math.random() * 15,
+        isIllegalDumping: ['e-waste', 'plastic'].includes(r.wasteType)
+      })),
+      source: 'mock'
+    }
+  };
+}
+
+function generatePredictionsData() {
+  const wards = mockData.wards || [];
+  const predictions = wards.map(w => ({
+    wardId: w.id,
+    wardName: w.name,
+    currentLoad: 50 + Math.random() * 100,
+    binCapacity: 300,
+    overflowProbability: Math.floor(30 + Math.random() * 50),
+    hoursToOverflow: 24 + Math.random() * 48,
+    urgencyLevel: w.cleanlinessIndex < 80 ? 'CRITICAL' : w.cleanlinessIndex < 85 ? 'HIGH' : 'MEDIUM'
+  }));
+
+  return {
+    success: true,
+    data: predictions,
+    source: 'mock'
+  };
+}
+
+function generateAlertsData() {
+  const reports = mockData.reports || [];
+  const activeReports = reports.filter(r => r.status !== 'resolved');
+  
+  const alerts = activeReports.map((r, idx) => ({
+    id: r.id,
+    wardName: mockData.wards.find(w => w.wardNumber === r.wardNumber)?.name || `Ward ${r.wardNumber}`,
+    wardNumber: r.wardNumber,
+    severity: (r.severityScore || 3) / 5,
+    type: r.wasteType === 'construction' ? 'waste_overflow' : 'illegal_dumping',
+    assignedTruck: `TN-58-MR-${4000 + idx}`,
+    createdAt: r.createdAt
+  }));
+
+  return {
+    success: true,
+    data: {
+      alerts: alerts,
+      total: alerts.length
+    },
+    source: 'mock'
+  };
+}
+
+function generatePolicyData() {
+  const policies = mockData.policies || [];
+  const wards = mockData.wards || [];
+
+  const recommendations = policies.map(p => {
+    const ward = wards.find(w => w.wardNumber === p.wardNumber);
+    const cleanlinessIndex = ward?.cleanlinessIndex || 85;
+    
+    return {
+      wardId: p.wardNumber,
+      ward: ward?.name || `Ward ${p.wardNumber}`,
+      infrastructure: cleanlinessIndex < 80 ? 'CCTV Network' : 'Smart Bins',
+      budget: `₹${p.budgetEstimate}`,
+      impact: cleanlinessIndex < 80 ? '78% reduction in violations' : '45% efficiency improvement',
+      priority: p.priority,
+      status: p.status
+    };
+  });
+
+  return {
+    success: true,
+    data: recommendations,
+    source: 'mock'
+  };
+}
+
 // @route   GET /api/intelligence/circular
 // @desc    Get circular economy data
 // @access  Public
@@ -142,25 +317,8 @@ router.get('/circular', async (req, res) => {
     });
   } catch (error) {
     console.error('Circular Intelligence Error:', error);
-    res.json({
-      success: true,
-      data: {
-        totalValue: 45000,
-        jobsCount: 12,
-        wasteKgs: 2400,
-        breakdown: [
-          { type: 'Plastic', weight: 840, value: 21000 },
-          { type: 'Organic', weight: 960, value: 21120 },
-          { type: 'Metal', weight: 360, value: 12600 },
-          { type: 'E-Waste', weight: 240, value: 10800 }
-        ],
-        environmental: {
-          co2Saved: 6000,
-          waterSaved: 36000,
-          energySaved: 19200
-        }
-      }
-    });
+    const mockData = generateCircularData();
+    res.json(mockData);
   }
 });
 
@@ -195,18 +353,8 @@ router.get('/detection', async (req, res) => {
     });
   } catch (error) {
     console.error('Detection Intelligence Error:', error);
-    res.json({
-      success: true,
-      data: {
-        totalClassifications: 742,
-        illegalDetections: 12,
-        averageConfidence: 89.5,
-        detectionHistory: [
-          { id: 1, wardName: 'Ward 1', timestamp: new Date(), wasteType: 'Plastic', confidence: 92, isIllegalDumping: false },
-          { id: 2, wardName: 'Ward 2', timestamp: new Date(), wasteType: 'Organic', confidence: 85, isIllegalDumping: false }
-        ]
-      }
-    });
+    const mockData = generateDetectionData();
+    res.json(mockData);
   }
 });
 
@@ -236,12 +384,8 @@ router.get('/predictions', async (req, res) => {
     });
   } catch (error) {
     console.error('Predictions Intelligence Error:', error);
-    res.json({
-      success: true,
-      data: [
-        { wardId: 1, wardName: 'Ward 1', currentLoad: 75, binCapacity: 300, overflowProbability: 45, hoursToOverflow: 48, urgencyLevel: 'MEDIUM' }
-      ]
-    });
+    const mockData = generatePredictionsData();
+    res.json(mockData);
   }
 });
 
@@ -276,14 +420,8 @@ router.get('/alerts', async (req, res) => {
     });
   } catch (error) {
     console.error('Alerts Intelligence Error:', error);
-    res.json({
-      success: true,
-      data: {
-        alerts: [
-          { id: 1, wardName: 'Ward 1', wardNumber: 1, severity: 0.8, type: 'illegal_dumping', assignedTruck: 'TN-58-MR-4012', createdAt: new Date() }
-        ]
-      }
-    });
+    const mockData = generateAlertsData();
+    res.json(mockData);
   }
 });
 
@@ -320,18 +458,8 @@ router.get('/policy', async (req, res) => {
     });
   } catch (error) {
     console.error('Policy Intelligence Error:', error);
-    res.json({
-      success: true,
-      data: [
-        {
-          ward: 'Ward 1',
-          infrastructure: 'CCTV Network',
-          budget: '₹5,80,000',
-          impact: '78% reduction in illegal dumping',
-          priority: 'High'
-        }
-      ]
-    });
+    const mockData = generatePolicyData();
+    res.json(mockData);
   }
 });
 

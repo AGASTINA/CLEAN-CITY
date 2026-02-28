@@ -22,8 +22,36 @@ try {
 // @access  Public
 router.get('/', async (req, res) => {
   try {
-    const { zone, sortBy = 'wardNumber' } = req.query;
+    // Check if mock data is available and use it immediately (faster response)
+    if (mockData.wards && mockData.wards.length > 0) {
+      const { zone, sortBy = 'wardNumber' } = req.query;
+      let wards = mockData.wards;
 
+      // Filter by zone if provided
+      if (zone) {
+        wards = wards.filter(w => w.zone === zone);
+      }
+
+      // Sort wards
+      if (sortBy) {
+        wards.sort((a, b) => {
+          if (sortBy === 'wardNumber') return a.wardNumber - b.wardNumber;
+          if (sortBy === 'name') return (a.name || '').localeCompare(b.name || '');
+          return 0;
+        });
+      }
+
+      console.log('📊 Serving mock wards data...');
+      return res.json({
+        success: true,
+        data: wards,
+        count: wards.length,
+        source: 'mock'
+      });
+    }
+
+    // Try to get from Firestore if mock data not available
+    const { zone, sortBy = 'wardNumber' } = req.query;
     let wards = await getAll(COLLECTIONS.wards);
 
     // Filter by zone if provided
@@ -72,7 +100,7 @@ router.get('/', async (req, res) => {
     
     // Fallback to mock data if Firestore is unavailable
     if (mockData.wards && mockData.wards.length > 0) {
-      console.log('📊 Serving mock wards data...');
+      console.log('📊 Serving mock wards data (from fallback)...');
       return res.json({
         success: true,
         data: mockData.wards,

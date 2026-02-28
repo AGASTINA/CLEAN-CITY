@@ -193,6 +193,23 @@ router.get('/', protect, async (req, res) => {
       sortBy = '-reportedAt'
     } = req.query;
 
+    // Check if mock data is available and use it immediately (faster response)
+    if (mockData.reports && mockData.reports.length > 0) {
+      console.log('📊 Serving mock reports data...');
+      const mockReports = mockData.reports.slice(0, parseInt(limit) || 20);
+      return res.json({
+        success: true,
+        data: mockReports,
+        pagination: {
+          currentPage: parseInt(page) || 1,
+          totalPages: 1,
+          totalRecords: mockData.reports.length,
+          limit: parseInt(limit) || 20
+        },
+        source: 'mock'
+      });
+    }
+
     // Build query
     const query = {};
 
@@ -260,7 +277,7 @@ router.get('/', protect, async (req, res) => {
     
     // Fallback to mock data if Firestore is unavailable
     if (mockData.reports && mockData.reports.length > 0) {
-      console.log('📊 Serving mock reports data...');
+      console.log('📊 Serving mock reports data (from fallback)...');
       const mockReports = mockData.reports.slice(0, parseInt(limit) || 20);
       return res.json({
         success: true,
